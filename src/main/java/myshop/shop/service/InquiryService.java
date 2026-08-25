@@ -15,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +88,39 @@ public class InquiryService {
         List<Long> itemNoList = itemRepository.getSellerItemNo(sellerNo);
         return inquiryRepository.findManageInquiry(pageable, itemNoList, searchInquiryDto);
     }
+
+
+    /**
+     * 답변 대기, 답변 완료 카운트 조회
+     * 판매자 페이지 -> 고객 문의
+     */
+    public Map<InquiryStatus, Long> countInquiryStatus(Long sellerNo) {
+        List<Long> itemNoList = itemRepository.getSellerItemNo(sellerNo);
+
+
+        List<Inquiry> inquiryList = em.createQuery("select i from Inquiry i where i.item.no IN :itemNoList", Inquiry.class)
+                .setParameter("itemNoList", itemNoList)
+                .getResultList();
+
+
+        Map<InquiryStatus, Long> count = new HashMap<>(Map.of(
+                InquiryStatus.답변대기, 0L,
+                InquiryStatus.답변완료, 0L
+        ));
+
+
+        for (Inquiry inquiry : inquiryList) {
+            if (inquiry.getInquiryStatus() == InquiryStatus.답변대기) {
+                count.replace(InquiryStatus.답변대기, count.get(InquiryStatus.답변대기) + 1);
+            }
+            else if (inquiry.getInquiryStatus() == InquiryStatus.답변완료) {
+                count.replace(InquiryStatus.답변완료, count.get(InquiryStatus.답변완료) + 1);
+            }
+        }
+
+        return count;
+    }
+
 
 
     /**

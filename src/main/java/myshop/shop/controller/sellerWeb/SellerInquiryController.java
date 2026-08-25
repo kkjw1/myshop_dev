@@ -8,16 +8,16 @@ import myshop.shop.dto.inquiry.ManageInquiryDto;
 import myshop.shop.dto.inquiry.SearchInquiryDto;
 import myshop.shop.dto.inquiry.UpdateInquiryDto;
 import myshop.shop.dto.seller.LoginCheckSellerDto;
+import myshop.shop.entity.inquiry.InquiryStatus;
 import myshop.shop.service.InquiryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -40,8 +40,13 @@ public class SellerInquiryController {
 
         Page<ManageInquiryDto> manageInquiryDtoPage = inquiryService.getManageInquiry(pageable, sellerNo, searchInquiryDto);
 
-        log.info("고객 문의 폼, pageable={} manageInquiryDtoPage={}", pageable, manageInquiryDtoPage);
+        Map<InquiryStatus, Long> countedInquiryStatus = inquiryService.countInquiryStatus(sellerNo);
 
+        log.info("고객 문의 폼, pageable={} manageInquiryDtoPage={}", pageable, manageInquiryDtoPage);
+        log.info("countedInquiryStatus={}", countedInquiryStatus);
+
+        model.addAttribute("unansweredCount", countedInquiryStatus.get(InquiryStatus.답변대기));
+        model.addAttribute("answeredCount", countedInquiryStatus.get(InquiryStatus.답변완료));
         model.addAttribute("manageInquiryDtoPage", manageInquiryDtoPage);
         return "seller/inquiry/inquiry_manage";
     }
@@ -53,10 +58,9 @@ public class SellerInquiryController {
      */
     @PostMapping("/seller/inquiry/reply")
     @ResponseBody
-    public ResponseEntity<String> inquiryReply(@ModelAttribute UpdateInquiryDto updateInquiryDto) {
+    public ResponseEntity<String> inquiryReply(@RequestBody UpdateInquiryDto updateInquiryDto) {
         inquiryService.replyInquiry(updateInquiryDto);
         return ResponseEntity.ok("success");
-        //todo: 관리 누르면 데이터 안뜸, 수정 필요
     }
 
 

@@ -39,39 +39,80 @@
     <div id="page-content-wrapper" class="flex-grow-1 p-4">
 
         <header class="mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
-            <h1 class="h3 mb-0 text-dark"><i class="fas fa-comment-dots me-2"></i>고객 문의 관리</h1>
+            <h1 class="h3 mb-0 text-dark"><i class="fas fa-comment-dots me-2"></i>고객 문의</h1>
             <div class="text-secondary">
                 <i class="fas fa-user-circle me-1"></i>[판매자]님, 환영합니다!
             </div>
         </header>
 
+        <div class="row g-4 mb-4">
+            <!-- 답변 대기 (빨간색) -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-start border-danger border-5 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-danger fw-bold">답변 대기</div>
+                                <div class="h1 mb-0 text-dark">
+                                    <span id="card-count-unanswered" th:text="${unansweredCount}">0</span> <span class="fs-5 text-muted">건</span>
+                                </div>
+                                <div class="text-muted small">신속한 답변 처리가 필요한 문의입니다.</div>
+                            </div>
+                            <i class="fas fa-exclamation-circle fa-3x text-danger opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 답변 완료 (초록색) -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-start border-success border-5 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-success fw-bold">답변 완료</div>
+                                <div class="h1 mb-0 text-dark">
+                                    <span id="card-count-answered" th:text="${answeredCount}">0</span> <span class="fs-5 text-muted">건</span>
+                                </div>
+                                <div class="text-muted small">답변이 완료된 문의 목록입니다.</div>
+                            </div>
+                            <i class="fas fa-check-circle fa-3x text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 검색 필터 영역 -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <form class="row g-3 align-items-center" th:action="@{/seller/inquiry_manage}" method="get" th:object="${searchInquiryDto}">
+                <form class="row g-3 align-items-center" th:action="@{/seller/inquiry_manage}" method="get">
 
                     <div class="col-md-3">
                         <label for="inquiryCategory" class="form-label visually-hidden">문의 카테고리</label>
-                        <select id="inquiryCategory" class="form-select" th:field="*{inquiryCategory}">
+                        <select id="inquiryCategory" class="form-select" name="inquiryCategory">
                             <option value="">전체 유형</option>
                             <option th:each="cat : ${T(myshop.shop.entity.inquiry.InquiryCategory).values()}"
                                     th:value="${cat}"
-                                    th:text="${cat.description}">상품 반품 문의</option>
-                        </select>
+                                    th:text="${cat.description}"
+                                    th:selected="${searchInquiryDto != null and searchInquiryDto.inquiryCategory == cat}">상품 반품 문의</option>                        </select>
                     </div>
 
                     <div class="col-md-3">
                         <label for="inquiryStatus" class="form-label visually-hidden">답변 상태</label>
-                        <select id="inquiryStatus" class="form-select" th:field="*{inquiryStatus}">
+                        <select id="inquiryStatus" class="form-select" name="inquiryStatus">
                             <option value="">전체 답변 상태</option>
                             <option th:each="status : ${T(myshop.shop.entity.inquiry.InquiryStatus).values()}"
                                     th:value="${status}"
-                                    th:text="${status}">답변대기</option>
-                        </select>
+                                    th:text="${status}"
+                                    th:selected="${searchInquiryDto != null and searchInquiryDto.inquiryStatus == status}">답변대기</option>                        </select>
                     </div>
+
                     <div class="col-md-4">
                         <label for="searchInput" class="form-label visually-hidden">검색어</label>
-                        <input type="text" class="form-control" id="searchInput" th:field="*{searchInput}" placeholder="문의 제목, 상품명, 옵션명 검색">
+                        <input type="text" class="form-control" id="searchInput" name="searchInput"
+                               th:value="${searchInquiryDto != null ? searchInquiryDto.searchInput : ''}"
+                               placeholder="문의 제목, 상품명, 옵션명 검색">
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-dark w-100"><i class="fas fa-search me-1"></i> 검색</button>
@@ -99,7 +140,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${manageInquiryDtoPage.empty}">
+                        <tr th:if="${manageInquiryDtoPage.isEmpty()}">
                             <td colspan="6" class="text-center py-4 text-muted">등록된 문의가 없습니다.</td>
                         </tr>
 
@@ -158,7 +199,7 @@
             </div>
 
             <!-- 페이징 영역 -->
-            <div class="card-footer bg-white d-flex justify-content-center" th:if="${!manageInquiryDtoPage.empty}">
+            <div class="card-footer bg-white d-flex justify-content-center" th:if="${!manageInquiryDtoPage.isEmpty()}">
                 <nav th:with="
                     pageNumber = ${manageInquiryDtoPage.number},
                     totalPages = ${manageInquiryDtoPage.totalPages},
@@ -309,13 +350,15 @@
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const inquiryReplyModalEl = document.getElementById('inquiryReplyModal');
-        const inquiryReplyModal = new bootstrap.Modal(inquiryReplyModalEl); // 모달 인스턴스
+        const inquiryViewModalEl = document.getElementById('inquiryViewModal');
         const btnSubmitReply = document.getElementById('btnSubmitReply');
 
+        // 부트스트랩 모달 인스턴스 생성
+        const replyModalInstance = inquiryReplyModalEl ? new bootstrap.Modal(inquiryReplyModalEl) : null;
 
         // 답변 작성 모달 데이터 바인딩
-        if (inquiryReplyModal) {
-            inquiryReplyModal.addEventListener('show.bs.modal', function (event) {
+        if (inquiryReplyModalEl) {
+            inquiryReplyModalEl.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
 
                 const inquiryNo = button.getAttribute('data-inquiry-no');
@@ -343,8 +386,8 @@
         });
 
         // 답변 확인 모달 데이터 바인딩
-        if (inquiryViewModal) {
-            inquiryViewModal.addEventListener('show.bs.modal', function (event) {
+        if (inquiryViewModalEl) {
+            inquiryViewModalEl.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
 
                 const inquiryCategory = button.getAttribute('data-inquiry-category');
@@ -364,46 +407,46 @@
         }
 
         // 답변 등록 버튼 클릭 (fetch 전송)
-        btnSubmitReply.addEventListener('click', function () {
-            const inquiryNo = document.getElementById('modalInquiryNo').value;
-            const answerContent = document.getElementById('replyContent').value;
+        if (btnSubmitReply) {
+            btnSubmitReply.addEventListener('click', function () {
+                const inquiryNo = document.getElementById('modalInquiryNo').value;
+                const answerContent = document.getElementById('replyContent').value;
 
-            if (!answerContent || answerContent.trim() === '') {
-                alert('답변 내용을 입력해 주세요.');
-                document.getElementById('replyContent').focus();
-                return;
-            }
+                if (!answerContent || answerContent.trim() === '') {
+                    alert('답변 내용을 입력해 주세요.');
+                    document.getElementById('replyContent').focus();
+                    return;
+                }
 
-            const data = {
-                inquiryNo: Long(inquiryNo) || inquiryNo,
-                answerContent: answerContent
-            };
+                const data = {
+                    inquiryNo: inquiryNo,
+                    answerContent: answerContent
+                };
 
-            fetch('/seller/inquiry/reply', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('답변이 성공적으로 등록되었습니다.');
-
-                        // 1. 모달 닫기
-                        inquiryReplyModal.hide();
-
-                        // 2. 현재 상태(select, searchInput, page 번호 등) 유지하면서 화면 새로고침
-                        location.reload();
-                    } else {
-                        alert('답변 등록에 실패했습니다. 다시 시도해 주세요.');
-                    }
+                fetch('/seller/inquiry/reply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('오류가 발생했습니다.');
-                });
-        });
+                    .then(response => {
+                        if (response.ok) {
+                            alert('답변이 성공적으로 등록되었습니다.');
+                            if (replyModalInstance) {
+                                replyModalInstance.hide();
+                            }
+                            location.reload();
+                        } else {
+                            alert('답변 등록에 실패했습니다. 다시 시도해 주세요.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+            });
+        }
 
 
     });

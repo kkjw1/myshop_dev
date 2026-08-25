@@ -186,4 +186,14 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         tuple -> tuple.get(itemImage.imageUrl)
                 ));
     }
+
+
+    @Override
+    public List<Long> getSellerItemNo(Long sellerNo) {
+        return queryFactory
+                .select(item.no)
+                .from(item)
+                .where(item.seller.no.eq(sellerNo))
+                .fetch();
+    }
 }

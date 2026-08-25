@@ -68,7 +68,6 @@ public class SellerController {
     }
 
 
-
     /**
      * 판매자 대시보드
      */
@@ -77,21 +76,8 @@ public class SellerController {
         return "seller/home";
     }
 
-    /**
-     * 고객 문의 관리 폼
-     */
-    @GetMapping("/seller/inquiry_manage")
-    public String requestInquiryForm() {
-        // todo: 판매자 페이지-> 고객 문의 페이지 기능
-        return "seller/inquiry/inquiry_manage";
-    }
 
-
-    @GetMapping("/seller/inquiry_reply")
-    public String inquiry_reply() {
-        return "seller/inquiry/inquiry_reply";
-    }
-
+    // todo: 추후 삭제 필요
     @GetMapping("/seller/order_delivery_detail")
     public String order_delivery_detail() {
         return "seller/delivery/order_delivery_detail";

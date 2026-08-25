@@ -1,26 +1,26 @@
 package myshop.shop.repository.inquiry;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import myshop.shop.controller.HomeItemController;
 import myshop.shop.controller.HomeItemController.DetailItemInquiryDto;
 import myshop.shop.dto.inquiry.CheckInquiryDto;
+import myshop.shop.dto.inquiry.ManageInquiryDto;
+import myshop.shop.dto.inquiry.SearchInquiryDto;
 import myshop.shop.entity.inquiry.InquiryCategory;
 import myshop.shop.entity.inquiry.InquiryStatus;
-import myshop.shop.entity.inquiry.QInquiry;
-import myshop.shop.entity.member.QMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static myshop.shop.entity.inquiry.QInquiry.inquiry;
 import static myshop.shop.entity.item.QItem.item;
-import static myshop.shop.entity.member.QMember.member;
 
 @RequiredArgsConstructor
 public class InquiryRepositoryImpl implements InquiryRepositoryCustom{
@@ -78,4 +78,61 @@ public class InquiryRepositoryImpl implements InquiryRepositoryCustom{
         return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
     }
 
+
+    @Override
+    public Page<ManageInquiryDto> findManageInquiry(Pageable pageable, List<Long> itemNoList, SearchInquiryDto searchInquiryDto) {
+
+        List<ManageInquiryDto> content = queryFactory
+                .select(Projections.fields(ManageInquiryDto.class,
+                        inquiry.no.as("inquiryNo"),
+                        inquiry.inquiryCategory,
+                        inquiry.inquiryStatus,
+                        inquiry.createdDate.as("inquiryCreateDate"),
+                        inquiry.title,
+                        inquiry.content,
+                        item.name.as("itemName"),
+                        inquiry.optionName.as("itemOptionName"),
+                        inquiry.answerContent
+                ))
+                .from(inquiry)
+                .leftJoin(inquiry.item, item)
+                .where(
+                        item.no.in(itemNoList),
+                        inquiryStatusEq(searchInquiryDto.getInquiryStatus()),
+                        inquiryCategoryEq(searchInquiryDto.getInquiryCategory()),
+                        searchInputLike(searchInquiryDto.getSearchInput())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> count = queryFactory
+                .select(inquiry.count())
+                .from(inquiry)
+                .leftJoin(inquiry.item, item)
+                .where(
+                        item.no.in(itemNoList),
+                        inquiryStatusEq(searchInquiryDto.getInquiryStatus()),
+                        inquiryCategoryEq(searchInquiryDto.getInquiryCategory()),
+                        searchInputLike(searchInquiryDto.getSearchInput())
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> count.fetchOne());
+    }
+
+    public BooleanExpression inquiryStatusEq(InquiryStatus inquiryStatus) {
+        return inquiryStatus != null ? inquiry.inquiryStatus.eq(inquiryStatus) : null;
+    }
+
+    public BooleanExpression inquiryCategoryEq(InquiryCategory inquiryCategory) {
+        return inquiryCategory != null ? inquiry.inquiryCategory.eq(inquiryCategory) : null;
+    }
+
+    // 문의 제목, 옵션이름, 상품이름
+    public BooleanExpression searchInputLike(String searchInput) {
+        if (searchInput == null || searchInput.isBlank()) {
+            return null; // 조건 없음 (전체 조회)
+        }
+        return inquiry.title.contains(searchInput).or(inquiry.optionName.contains(searchInput)).or(item.name.contains(searchInput));
+    }
 }

@@ -8,30 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style th:replace="~{seller/common :: sidebar_style}">
-        body {
-            background-color: #f8f9fa; /* 밝은 배경색 */
-        }
-        .sidebar {
-            background-color: #2c3e50; /* 다크 네이비 */
-            min-height: 100vh;
-            color: white;
-            padding-top: 20px;
-        }
-        .sidebar .nav-link {
-            color: #ecf0f1;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            transition: background-color 0.3s;
-        }
-        .sidebar .nav-link.active-menu,
-        .sidebar .nav-link:hover {
-            background-color: #34495e;
-            border-left: 5px solid #3498db;
-            color: white;
-        }
+        body { background-color: #f8f9fa; }
+        .sidebar { background-color: #2c3e50; min-height: 100vh; color: white; padding-top: 20px; }
+        .sidebar .nav-link { color: #ecf0f1; padding: 15px 20px; font-size: 1.1rem; transition: background-color 0.3s; }
+        .sidebar .nav-link.active-menu, .sidebar .nav-link:hover { background-color: #34495e; border-left: 5px solid #3498db; color: white; }
     </style>
     <style>
-        /* 답변 상태 강조 */
         .status-unanswered { font-weight: bold; color: #dc3545; }
         .status-answered { color: #28a745; }
     </style>
@@ -44,12 +26,12 @@
         <div class="sidebar d-none d-md-block" style="width: 250px;">
             <h3 class="text-center mb-4 text-white">📦 판매자 센터</h3>
             <nav class="nav flex-column">
-                <a class="nav-link" href="home.html" th:href="@{/seller}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>
-                <a class="nav-link" href="item/item_manage.html" th:href="@{/seller/item_manage}"><i class="fas fa-box me-2"></i> 상품 관리</a>
-                <a class="nav-link" href="delivery/order_delivery.html" th:href="@{/seller/order_delivery}"><i class="fas fa-shopping-cart me-2"></i> 주문/배송</a>
-                <a class="nav-link" href="request/request_manage.html" th:href="@{/seller/request_manage}"><i class="fas fa-undo-alt me-2"></i> 취소/반품 관리</a>
-                <a class="nav-link" href="inquiry/inquiry_manage.html" th:href="@{/seller/inquiry_manage}"><i class="fas fa-comment-dots me-2"></i> 고객 문의</a>
-                <a class="nav-link" href="../home/home.html" th:href="@{/}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
+                <a class="nav-link" href="#" th:href="@{/seller}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>
+                <a class="nav-link" href="#" th:href="@{/seller/item_manage}"><i class="fas fa-box me-2"></i> 상품 관리</a>
+                <a class="nav-link" href="#" th:href="@{/seller/order_delivery}"><i class="fas fa-shopping-cart me-2"></i> 주문/배송</a>
+                <a class="nav-link" href="#" th:href="@{/seller/request_manage}"><i class="fas fa-undo-alt me-2"></i> 취소/반품 관리</a>
+                <a class="nav-link active-menu" href="#" th:href="@{/seller/inquiry_manage}"><i class="fas fa-comment-dots me-2"></i> 고객 문의</a>
+                <a class="nav-link" href="#" th:href="@{/}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
             </nav>
         </div>
     </th:block>
@@ -57,67 +39,39 @@
     <div id="page-content-wrapper" class="flex-grow-1 p-4">
 
         <header class="mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
-            <h1 class="h3 mb-0 text-dark" th:text="고객 문의 관리"><i class="fas fa-comment-dots me-2"></i>고객 문의 관리</h1>
+            <h1 class="h3 mb-0 text-dark"><i class="fas fa-comment-dots me-2"></i>고객 문의 관리</h1>
             <div class="text-secondary">
                 <i class="fas fa-user-circle me-1"></i>[판매자]님, 환영합니다!
-                <i class="fas me-1"></i> 로그아웃
             </div>
         </header>
 
-        <div class="row g-4 mb-4">
-            <div class="col-lg-6">
-                <div class="card shadow-sm border-start border-danger border-5 h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-danger fw-bold">미처리 문의 (긴급)</div>
-                                <div class="h1 mb-0 text-danger">5</div>
-                                <div class="text-muted">건 (즉시 처리 필요)</div>
-                            </div>
-                            <i class="fas fa-exclamation-circle fa-4x text-danger opacity-25"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card shadow-sm border-start border-success border-5 h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-success fw-bold">총 문의 건수 (최근 7일)</div>
-                                <div class="h1 mb-0 text-success">35</div>
-                                <div class="text-muted">건</div>
-                            </div>
-                            <i class="fas fa-check-circle fa-4x text-success opacity-25"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <!-- 검색 필터 영역 -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <form class="row g-3 align-items-center">
+                <form class="row g-3 align-items-center" th:action="@{/seller/inquiry_manage}" method="get" th:object="${searchInquiryDto}">
+
                     <div class="col-md-3">
-                        <label for="inquiryType" class="form-label visually-hidden">문의 유형</label>
-                        <select id="inquiryType" class="form-select">
-                            <option selected>전체 유형</option>
-                            <option>상품 문의</option>
-                            <option>반품 문의</option>
-                            <option>취소 문의</option>
+                        <label for="inquiryCategory" class="form-label visually-hidden">문의 카테고리</label>
+                        <select id="inquiryCategory" class="form-select" th:field="*{inquiryCategory}">
+                            <option value="">전체 유형</option>
+                            <option th:each="cat : ${T(myshop.shop.entity.inquiry.InquiryCategory).values()}"
+                                    th:value="${cat}"
+                                    th:text="${cat.description}">상품 반품 문의</option>
                         </select>
                     </div>
+
                     <div class="col-md-3">
-                        <label for="replyStatus" class="form-label visually-hidden">답변 상태</label>
-                        <select id="replyStatus" class="form-select">
-                            <option selected>전체 답변 상태</option>
-                            <option>답변 대기</option>
-                            <option>답변 완료</option>
+                        <label for="inquiryStatus" class="form-label visually-hidden">답변 상태</label>
+                        <select id="inquiryStatus" class="form-select" th:field="*{inquiryStatus}">
+                            <option value="">전체 답변 상태</option>
+                            <option th:each="status : ${T(myshop.shop.entity.inquiry.InquiryStatus).values()}"
+                                    th:value="${status}"
+                                    th:text="${status}">답변대기</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label for="searchInput" class="form-label visually-hidden">검색어</label>
-                        <input type="text" class="form-control" id="searchInput" placeholder="주문번호, 문의 제목, 고객명 검색">
+                        <input type="text" class="form-control" id="searchInput" th:field="*{searchInput}" placeholder="문의 제목, 상품명, 옵션명 검색">
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-dark w-100"><i class="fas fa-search me-1"></i> 검색</button>
@@ -126,10 +80,10 @@
             </div>
         </div>
 
+        <!-- 문의 목록 영역 -->
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">총 문의 목록: 50건</h5>
-                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-envelope-open-text me-1"></i> 미처리 문의만 보기</button>
+                <h5 class="mb-0">총 문의 목록: <span th:text="${manageInquiryDtoPage.totalElements}">0</span>건</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -138,88 +92,97 @@
                         <tr>
                             <th>번호</th>
                             <th>문의 유형</th>
-                            <th>제목 (관련 상품)</th>
-                            <th>작성자/주문번호</th>
+                            <th>제목 / 상품명(옵션)</th>
                             <th>작성일</th>
                             <th>답변 상태</th>
-                            <th style="width: 80px;">관리</th>
+                            <th style="width: 100px;">관리</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td><span class="badge bg-warning text-dark">배송/반품 문의</span></td>
-                            <td>**[긴급] 반품 신청 후 수거가 안 되고 있습니다.**</td>
-                            <td>홍길동 / 20240720-00123</td>
-                            <td>2024-07-21</td>
-                            <td class="status-unanswered"><span class="badge bg-danger">답변 대기</span></td>
+                        <tr th:if="${manageInquiryDtoPage.empty}">
+                            <td colspan="6" class="text-center py-4 text-muted">등록된 문의가 없습니다.</td>
+                        </tr>
+
+
+                        <tr th:each="dto : ${manageInquiryDtoPage.content}">
+                            <td th:text="${dto.inquiryNo}">1</td>
                             <td>
-                                <!-- button 태그로 변경 및 modal target 설정 -->
-                                <button type="button"
+                                <!-- 카테고리 description 출력 (e.g. 상품 반품 문의) -->
+                                <span class="badge bg-secondary" th:text="${dto.inquiryCategory.description}">상품/기타 문의</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark" th:text="${dto.title}">문의 제목</div>
+                                <small class="text-muted"
+                                       th:text="${dto.itemName + (dto.itemOptionName != null ? ' (' + dto.itemOptionName + ')' : '')}">상품명 (옵션)</small>
+                            </td>
+                            <td th:text="${#temporals.format(dto.inquiryCreateDate, 'yyyy-MM-dd HH:mm')}">2026-08-25 10:00</td>
+                            <td>
+                                <!-- 한글 Enum 조건에 맞춘 Badge 처리 -->
+                                <span th:if="${dto.inquiryStatus == T(myshop.shop.entity.inquiry.InquiryStatus).답변대기}" class="badge bg-danger">답변 대기</span>
+                                <span th:if="${dto.inquiryStatus == T(myshop.shop.entity.inquiry.InquiryStatus).답변완료}" class="badge bg-success">답변 완료</span>
+                            </td>
+                            <td>
+                                <!-- 답변 대기 상태일 때: 답변하기 모달 버튼 -->
+                                <button th:if="${dto.inquiryStatus == T(myshop.shop.entity.inquiry.InquiryStatus).답변대기}"
+                                        type="button"
                                         class="btn btn-sm btn-danger btn-reply"
                                         data-bs-toggle="modal"
                                         data-bs-target="#inquiryReplyModal"
-                                        data-inquiry-id="1"
-                                        data-inquiry-type="배송/반품 문의"
-                                        data-writer="홍길동 (주문번호: 20240720-00123)"
-                                        data-title="[긴급] 반품 신청 후 수거가 안 되고 있습니다."
-                                        data-content="지난주 금요일에 반품 신청을 했는데 아직 기사님이 오지 않으셨습니다. 확인 부탁드립니다.">
+                                        th:data-inquiry-no="${dto.inquiryNo}"
+                                        th:data-inquiry-category="${dto.inquiryCategory.description}"
+                                        th:data-item-info="${dto.itemName + (dto.itemOptionName != null ? ' (' + dto.itemOptionName + ')' : '')}"
+                                        th:data-title="${dto.title}"
+                                        th:data-content="${dto.content}">
                                     답변하기
                                 </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td><span class="badge bg-secondary">상품 문의</span></td>
-                            <td>프리미엄 와이드 팬츠의 소재가 궁금합니다.</td>
-                            <td>구매자 A</td>
-                            <td>2024-07-20</td>
-                            <td class="status-answered"><span class="badge bg-success">답변 완료</span></td>
-                            <td>
-                                <!-- 확인 버튼: 답변 내용과 등록일 데이터를 추가 -->
-                                <button type="button"
+
+                                <!-- 답변 완료 상태일 때: 상세 확인 모달 버튼 -->
+                                <button th:if="${dto.inquiryStatus == T(myshop.shop.entity.inquiry.InquiryStatus).답변완료}"
+                                        type="button"
                                         class="btn btn-sm btn-outline-secondary btn-view-inquiry"
                                         data-bs-toggle="modal"
                                         data-bs-target="#inquiryViewModal"
-                                        data-inquiry-type="상품 문의"
-                                        data-writer="구매자 A"
-                                        data-date="2024-07-20"
-                                        data-title="프리미엄 와이드 팬츠의 소재가 궁금합니다."
-                                        data-content="소재가 면 100%인가요? 아니면 폴리에스터 혼방인가요? 여름에 입기 두꺼운지 궁금합니다."
-                                        data-reply-content="안녕하세요 고객님! 문의해주신 프리미엄 와이드 팬츠는 면 60%, 폴리에스터 40% 혼방 소재입니다. 통기성이 좋아 여름철에도 쾌적하게 착용하실 수 있습니다. 감사합니다."
-                                        data-reply-date="2024-07-20 14:30">
+                                        th:data-inquiry-category="${dto.inquiryCategory.description}"
+                                        th:data-create-date="${#temporals.format(dto.inquiryCreateDate, 'yyyy-MM-dd HH:mm')}"
+                                        th:data-item-info="${dto.itemName + (dto.itemOptionName != null ? ' (' + dto.itemOptionName + ')' : '')}"
+                                        th:data-title="${dto.title}"
+                                        th:data-content="${dto.content}"
+                                        th:data-answer-content="${dto.answerContent}">
                                     확인
                                 </button>
                             </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td><span class="badge bg-info">결제/취소 문의</span></td>
-                            <td>주문번호 20240721-00150 취소 요청합니다.</td>
-                            <td>김철수 / 20240721-00150</td>
-                            <td>2024-07-21</td>
-                            <td class="status-unanswered"><span class="badge bg-danger">답변 대기</span></td>
-                            <td><a href="#" class="btn btn-sm btn-danger">답변하기</a></td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="card-footer bg-white d-flex justify-content-center">
-                <nav>
+            <!-- 페이징 영역 -->
+            <div class="card-footer bg-white d-flex justify-content-center" th:if="${!manageInquiryDtoPage.empty}">
+                <nav th:with="
+                    pageNumber = ${manageInquiryDtoPage.number},
+                    totalPages = ${manageInquiryDtoPage.totalPages},
+                    startPage = ${T(java.lang.Math).max(0, pageNumber - 2)},
+                    endPage = ${T(java.lang.Math).min(totalPages - 1, pageNumber + 2)}">
+
                     <ul class="pagination mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
+                        <li class="page-item" th:classappend="${manageInquiryDtoPage.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/seller/inquiry_manage(page=${pageNumber - 1}, inquiryCategory=${searchInquiryDto.inquiryCategory}, inquiryStatus=${searchInquiryDto.inquiryStatus}, searchInput=${searchInquiryDto.searchInput})}">이전</a>
+                        </li>
+
+                        <li class="page-item" th:each="page : ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber} ? 'active'">
+                            <a class="page-link" th:href="@{/seller/inquiry_manage(page=${page}, inquiryCategory=${searchInquiryDto.inquiryCategory}, inquiryStatus=${searchInquiryDto.inquiryStatus}, searchInput=${searchInquiryDto.searchInput})}" th:text="${page + 1}">1</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${manageInquiryDtoPage.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/seller/inquiry_manage(page=${pageNumber + 1}, inquiryCategory=${searchInquiryDto.inquiryCategory}, inquiryStatus=${searchInquiryDto.inquiryStatus}, searchInput=${searchInquiryDto.searchInput})}">다음</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- 고객 문의 답변 모달 -->
 <div class="modal fade" id="inquiryReplyModal" tabindex="-1" aria-labelledby="inquiryReplyModalLabel" aria-hidden="true">
@@ -232,21 +195,21 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form id="replyForm" th:action="@{/seller/inquiry/reply}" method="post">
+            <!-- action, method 제거 및 제출 처리 방지 -->
+            <form id="replyForm" onsubmit="return false;">
                 <div class="modal-body p-4">
                     <!-- 숨겨진 문의 ID 입력 필드 -->
-                    <input type="hidden" id="modalInquiryId" name="inquiryId" value="">
+                    <input type="hidden" id="modalInquiryNo" name="inquiryNo" value="">
 
-                    <!-- 문의 기본 정보 섹션 -->
                     <div class="card bg-light mb-3 border-0">
                         <div class="card-body">
                             <div class="row mb-2">
-                                <div class="col-md-3 text-muted fw-bold">문의 유형</div>
-                                <div class="col-md-9" id="modalInquiryType">-</div>
+                                <div class="col-md-3 text-muted fw-bold">문의 카테고리</div>
+                                <div class="col-md-9" id="modalInquiryCategory">-</div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-md-3 text-muted fw-bold">작성자 / 주문번호</div>
-                                <div class="col-md-9" id="modalWriter">-</div>
+                                <div class="col-md-3 text-muted fw-bold">상품명(옵션)</div>
+                                <div class="col-md-9" id="modalItemInfo">-</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3 text-muted fw-bold">문의 제목</div>
@@ -255,43 +218,36 @@
                         </div>
                     </div>
 
-                    <!-- 문의 내용 -->
                     <div class="mb-4">
                         <label class="form-label fw-bold"><i class="fas fa-question-circle me-1"></i>문의 내용</label>
-                        <div class="p-3 bg-white border rounded text-secondary" id="modalContent" style="min-height: 100px; white-space: pre-line;">
-                            <!-- JS를 통해 문의 내용이 동적으로 삽입됩니다 -->
-                        </div>
+                        <div class="p-3 bg-white border rounded text-secondary" id="modalContent" style="min-height: 100px; white-space: pre-line;"></div>
                     </div>
 
                     <hr>
 
-                    <!-- 답변 입력 영역 -->
                     <div class="mb-3">
                         <label for="replyContent" class="form-label fw-bold text-primary">
                             <i class="fas fa-pen me-1"></i>답변 작성 <span class="text-danger">*</span>
                         </label>
-                        <textarea class="form-control" id="replyContent" name="replyContent" rows="6"
-                                  placeholder="고객님께 전달할 정성 어린 답변을 입력해 주세요." required></textarea>
+                        <textarea class="form-control" id="replyContent" name="answerContent" rows="6" placeholder="고객님께 전달할 정성 어린 답변을 입력해 주세요." required></textarea>
                     </div>
 
-                    <!-- 자주 쓰는 답변 템플릿 (선택 사항) -->
                     <div class="d-flex align-items-center gap-2">
                         <span class="small text-muted"><i class="fas fa-magic me-1"></i>자주 쓰는 템플릿:</span>
-                        <button type="button" class="btn btn-outline-secondary btn-sm template-btn" data-template="안녕하세요, 고객님! 문의해주신 상품의 배송 관련하여 안내드립니다. 현재 택배사 물량 증가로 인한 지연이 발생하고 있습니다. 빠르게 수거될 수 있도록 조치하겠습니다. 감사합니다.">배송 지연 안내</button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm template-btn" data-template="안녕하세요, 고객님! 취소/환불 신청이 정상적으로 완료되었습니다. 결제 수단에 따라 영업일 기준 3~5일 이내 환불 처리될 예정입니다. 감사합니다.">환불 완료 안내</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm template-btn" data-template="안녕하세요, 고객님! 문의해주신 상품의 배송 관련하여 안내드립니다. 확인 후 빠르게 안내해 드리겠습니다. 감사합니다.">배송 안내</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm template-btn" data-template="안녕하세요, 고객님! 해당 상품의 옵션 관련 안내입니다. 감사합니다.">옵션 안내</button>
                     </div>
                 </div>
 
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i>답변 등록</button>
+                    <!-- type="button" 및 id="btnSubmitReply" 지정 -->
+                    <button type="button" id="btnSubmitReply" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i>답변 등록</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-
 
 <!-- 고객 문의 및 답변 상세보기 모달 -->
 <div class="modal fade" id="inquiryViewModal" tabindex="-1" aria-labelledby="inquiryViewModalLabel" aria-hidden="true">
@@ -305,16 +261,15 @@
             </div>
 
             <div class="modal-body p-4">
-                <!-- 문의 기본 정보 카드 -->
                 <div class="card bg-light mb-3 border-0">
                     <div class="card-body">
                         <div class="row mb-2">
-                            <div class="col-md-3 text-muted fw-bold">문의 유형</div>
-                            <div class="col-md-9" id="viewInquiryType">-</div>
+                            <div class="col-md-3 text-muted fw-bold">문의 카테고리</div>
+                            <div class="col-md-9" id="viewInquiryCategory">-</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-md-3 text-muted fw-bold">작성자 / 작성일</div>
-                            <div class="col-md-9"><span id="viewWriter">-</span> <span class="text-muted ms-2" id="viewDate"></span></div>
+                            <div class="col-md-3 text-muted fw-bold">상품명(옵션) / 작성일</div>
+                            <div class="col-md-9"><span id="viewItemInfo">-</span> <span class="text-muted ms-2" id="viewCreateDate"></span></div>
                         </div>
                         <div class="row">
                             <div class="col-md-3 text-muted fw-bold">문의 제목</div>
@@ -323,29 +278,22 @@
                     </div>
                 </div>
 
-                <!-- 고객 문의 본문 -->
                 <div class="mb-4">
                     <label class="form-label fw-bold text-secondary">
                         <i class="fas fa-question-circle me-1"></i>고객 문의 내용
                     </label>
-                    <div class="p-3 bg-white border rounded text-dark" id="viewContent" style="min-height: 80px; white-space: pre-line;">
-                        <!-- 문의 내용 동적 삽입 -->
-                    </div>
+                    <div class="p-3 bg-white border rounded text-dark" id="viewContent" style="min-height: 80px; white-space: pre-line;"></div>
                 </div>
 
                 <hr class="my-4">
 
-                <!-- 등록된 판매자 답변 -->
                 <div class="mb-2">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label class="form-label fw-bold text-success mb-0">
                             <i class="fas fa-check-circle me-1"></i>판매자 답변 내용
                         </label>
-                        <small class="text-muted" id="viewReplyDate">-</small>
                     </div>
-                    <div class="p-3 border rounded bg-light border-success text-dark" id="viewReplyContent" style="min-height: 100px; white-space: pre-line;">
-                        <!-- 답변 내용 동적 삽입 -->
-                    </div>
+                    <div class="p-3 border rounded bg-light border-success text-dark" id="viewAnswerContent" style="min-height: 100px; white-space: pre-line;"></div>
                 </div>
             </div>
 
@@ -360,64 +308,103 @@
 
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
-        const inquiryReplyModal = document.getElementById('inquiryReplyModal');
-        const inquiryViewModal = document.getElementById('inquiryViewModal');
+        const inquiryReplyModalEl = document.getElementById('inquiryReplyModal');
+        const inquiryReplyModal = new bootstrap.Modal(inquiryReplyModalEl); // 모달 인스턴스
+        const btnSubmitReply = document.getElementById('btnSubmitReply');
 
 
-        // 모달이 열릴 때 데이터 바인딩
-        inquiryReplyModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget; // 클릭한 버튼
+        // 답변 작성 모달 데이터 바인딩
+        if (inquiryReplyModal) {
+            inquiryReplyModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
 
-            // 버튼의 data-* 속성에서 정보 추출
-            const inquiryId = button.getAttribute('data-inquiry-id');
-            const inquiryType = button.getAttribute('data-inquiry-type');
-            const writer = button.getAttribute('data-writer');
-            const title = button.getAttribute('data-title');
-            const content = button.getAttribute('data-content');
+                const inquiryNo = button.getAttribute('data-inquiry-no');
+                const inquiryCategory = button.getAttribute('data-inquiry-category');
+                const itemInfo = button.getAttribute('data-item-info');
+                const title = button.getAttribute('data-title');
+                const content = button.getAttribute('data-content');
 
-            // 모달 내부 데이터 반영
-            document.getElementById('modalInquiryId').value = inquiryId;
-            document.getElementById('modalInquiryType').textContent = inquiryType;
-            document.getElementById('modalWriter').textContent = writer;
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalContent').textContent = content;
+                document.getElementById('modalInquiryNo').value = inquiryNo;
+                document.getElementById('modalInquiryCategory').textContent = inquiryCategory;
+                document.getElementById('modalItemInfo').textContent = itemInfo;
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalContent').textContent = content;
 
-            // 기존 작성 중이던 답변 초기화
-            document.getElementById('replyContent').value = '';
-        });
+                document.getElementById('replyContent').value = '';
+            });
+        }
 
-        // 자주 쓰는 템플릿 버튼 클릭 이벤트처리
+        // 템플릿 버튼 동작
         const templateButtons = document.querySelectorAll('.template-btn');
         templateButtons.forEach(btn => {
             btn.addEventListener('click', function () {
-                const templateText = this.getAttribute('data-template');
-                document.getElementById('replyContent').value = templateText;
+                document.getElementById('replyContent').value = this.getAttribute('data-template');
             });
         });
 
+        // 답변 확인 모달 데이터 바인딩
         if (inquiryViewModal) {
             inquiryViewModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget; // 클릭한 확인 버튼
+                const button = event.relatedTarget;
 
-                // 버튼의 data-* 속성에서 데이터 가져오기
-                const inquiryType = button.getAttribute('data-inquiry-type');
-                const writer = button.getAttribute('data-writer');
-                const date = button.getAttribute('data-date');
+                const inquiryCategory = button.getAttribute('data-inquiry-category');
+                const itemInfo = button.getAttribute('data-item-info');
+                const createDate = button.getAttribute('data-create-date');
                 const title = button.getAttribute('data-title');
                 const content = button.getAttribute('data-content');
-                const replyContent = button.getAttribute('data-reply-content');
-                const replyDate = button.getAttribute('data-reply-date');
+                const answerContent = button.getAttribute('data-answer-content');
 
-                // 모달 내부 데이터 채우기
-                document.getElementById('viewInquiryType').textContent = inquiryType;
-                document.getElementById('viewWriter').textContent = writer;
-                document.getElementById('viewDate').textContent = '(' + date + ')';
+                document.getElementById('viewInquiryCategory').textContent = inquiryCategory;
+                document.getElementById('viewItemInfo').textContent = itemInfo;
+                document.getElementById('viewCreateDate').textContent = '(' + createDate + ')';
                 document.getElementById('viewTitle').textContent = title;
                 document.getElementById('viewContent').textContent = content;
-                document.getElementById('viewReplyContent').textContent = replyContent;
-                document.getElementById('viewReplyDate').textContent = '답변일시: ' + replyDate;
+                document.getElementById('viewAnswerContent').textContent = answerContent;
             });
         }
+
+        // 답변 등록 버튼 클릭 (fetch 전송)
+        btnSubmitReply.addEventListener('click', function () {
+            const inquiryNo = document.getElementById('modalInquiryNo').value;
+            const answerContent = document.getElementById('replyContent').value;
+
+            if (!answerContent || answerContent.trim() === '') {
+                alert('답변 내용을 입력해 주세요.');
+                document.getElementById('replyContent').focus();
+                return;
+            }
+
+            const data = {
+                inquiryNo: Long(inquiryNo) || inquiryNo,
+                answerContent: answerContent
+            };
+
+            fetch('/seller/inquiry/reply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('답변이 성공적으로 등록되었습니다.');
+
+                        // 1. 모달 닫기
+                        inquiryReplyModal.hide();
+
+                        // 2. 현재 상태(select, searchInput, page 번호 등) 유지하면서 화면 새로고침
+                        location.reload();
+                    } else {
+                        alert('답변 등록에 실패했습니다. 다시 시도해 주세요.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('오류가 발생했습니다.');
+                });
+        });
+
 
     });
 </script>

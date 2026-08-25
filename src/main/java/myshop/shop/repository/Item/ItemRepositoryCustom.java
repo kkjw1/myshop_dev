@@ -43,4 +43,10 @@ public interface ItemRepositoryCustom {
      * sortOrder ASC
      */
     Map<Long, String> getImageUrls(Long itemNo);
+
+    /**
+     * 판매상품 불러오기
+     * 판매자 페이지 -> 고객 문의 관리
+     */
+    List<Long> getSellerItemNo(Long sellerNo);
 }

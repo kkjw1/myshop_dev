@@ -57,7 +57,7 @@ public class HomeItemController {
         Page<DetailItemReviewDto> detailItemReviewDtoPage = reviewService.itemDetailReview(pageable, itemNo, searchReviewDto);
         ReviewScoreDto reviewScoreDto = reviewService.itemDetailReviewScore(itemNo);
 
-        Page<DetailItemInquiryDto> detailItemInquiryDtoPage = inquiryService.itemDetailInquiry(pageable, itemNo);
+        Page<DetailItemInquiryDto> detailItemInquiryDtoPage = inquiryService.getItemDetailInquiry(pageable, itemNo);
 
         //조회수 증가
         itemService.addViewCount(itemNo);
@@ -114,24 +114,21 @@ public class HomeItemController {
     @ResponseBody
     public Page<DetailItemReviewDto> searchItemReview(@RequestParam("itemNo") Long itemNo,
                                                       @ModelAttribute SearchReviewDto searchReviewDto, @Qualifier("review") Pageable pageable) {
-        log.info("searchReviewDto={}, pageable={}", searchReviewDto, pageable);
+        log.info("Review page, searchReviewDto={}, pageable={}", searchReviewDto, pageable);
         return reviewService.itemDetailReview(pageable, itemNo, searchReviewDto);
     }
 
 
     /**
-     * 상품문의 페이징
+     * 상품문의 페이징(더보기 버튼 페이징)
      * /item/inquiries&itemNo=1&inquiry_page=1
      */
     @GetMapping("/item/inquiries")
     @ResponseBody
     public Page<DetailItemInquiryDto> searchItemInquiry(@RequestParam("itemNo") Long itemNo, @Qualifier("inquiry") Pageable pageable) {
-        log.info("pageable={}", pageable);
-        return inquiryService.itemDetailInquiry(pageable, itemNo);
+        log.info("inquiry page, pageable={}", pageable);
+        return inquiryService.getItemDetailInquiry(pageable, itemNo);
     }
-
-    // todo: 판매자 페이지에서 나머지 기능 추가하기
-
 
 
     /**

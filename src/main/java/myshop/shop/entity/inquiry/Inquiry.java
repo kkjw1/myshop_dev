@@ -50,4 +50,13 @@ public class Inquiry extends BaseDateEntity {
         this.inquiryStatus = inquiryStatus;
         this.answerContent = answerContent;
     }
+
+
+    public void updateAnswerContent(String answerContent) {
+        this.answerContent = answerContent;
+    }
+
+    public void updateInquiryStatus(InquiryStatus inquiryStatus) {
+        this.inquiryStatus = inquiryStatus;
+    }
 }

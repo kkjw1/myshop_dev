@@ -1,6 +1,6 @@
 # myshop_dev 
 
-Spring Boot 기반의 쇼핑몰 플랫폼입니다. 회원과 판매자를 위한 별도의 화면을 갖추고 있습니다.
+Spring Boot 기반의 쇼핑몰 플랫폼입니다. 회원과 판매자를 위한 별도의 화면을 갖추고 있습니다.<br>
 상품 등록부터 장바구니, 주문, 결제 전 재고 선점, 배송, 취소/반품/환불, 리뷰, 문의까지의 기능을 구현했습니다.
 
 ## 기술 스택
@@ -40,14 +40,14 @@ myshop.shop
 
 ### 1. 회원 / 판매자 인증
 - 회원가입, 로그인, 비밀번호 재설정, 이메일/문자 인증(Solapi, Spring Mail)
-- JWT 기반 로그인 유지: Access Token은 `Authorization` 헤더, Refresh Token은 HttpOnly 쿠키로 전달하는 혼합 방식(`JwtService`, `JwtFilter`)
+- JWT 기반 로그인 유지: Access Token은 `Authorization` 헤더, Refresh Token은 HttpOnly 쿠키로 전달하는 혼합 방식
 - Refresh Token은 Redis에 저장하여 서버 측에서 검증·무효화 가능
-- 회원/판매자용 로그인 체크 인터셉터(`LoginCheckMemberInterceptor`, `LoginCheckSellerInterceptor`)로 접근 제어
+- 회원/판매자용 로그인 체크 인터셉터로 접근 제어
 
-### 2. 상품 관리 (`ItemService`, `ItemRepositoryImpl`)
-- 상품/옵션 등록·수정·삭제, 이미지 다중 업로드(`ItemImageService`, `FileService`)
-- QueryDSL 기반 상품 목록/검색/페이징, 판매자 상품 일괄 수정(`BulkModifyItemDto`)
-- 조회수 증가 등 부가 로직 포함
+### 2. 상품 관리
+- 상품/옵션 등록·수정·삭제, 이미지 다중 업로드
+- QueryDSL 기반 상품 목록/검색/페이징, 판매자 상품 일괄 수정
+- 조회수 증가 로직
 
 ### 3. 재고 동시성 제어
 선차감, TTL 예약 전략을 사용하여 미결제 시 이벤트 기반 자동 롤백 구조를 사용합니다.
@@ -71,7 +71,7 @@ myshop.shop
 - 판매자가 주문 배송 상태를 개별/일괄로 갱신
 
 ### 7. 리뷰 / 문의
-- 구매 확정 상품에 대한 리뷰 작성 및 평점 집계(`ReviewScoreDto`)
+- 구매 확정 상품에 대한 리뷰 작성 및 평점 집계
 - 회원 문의 등록/조회, 판매자 문의 관리(카테고리·상태 필터링)
 
 
@@ -84,11 +84,11 @@ myshop.shop
 - `JWT_SECRET` — JWT 서명 키
 - `REDIS_PASSWORD` — Redis 비밀번호
 
-또한 로컬에 H2(TCP 모드)와 Redis가 구동 중이어야 합니다. TTL을 위해 redis.conf에서 notify-keyspace-events "Ex"를 사용해야 한다.
+또한 로컬에 H2(TCP 모드)와 Redis가 구동 중이어야 합니다.<br>
+TTL을 위해 redis.conf에서 notify-keyspace-events "Ex"를 사용해야 합니다.
 ## 실행 방법
 
 ```bash
 # H2(TCP 모드)서버 및 Redis(윈도우 WSL)가 로컬에서 실행 중이어야 합니다. 
-# redis.conf에서 notify-keyspace-events "Ex"를 사용해야 한다.(TTL)
 ./gradlew bootRun
 ```

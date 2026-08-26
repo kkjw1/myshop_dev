@@ -17,6 +17,18 @@ Spring Boot 기반의 쇼핑몰 플랫폼입니다. 회원과 판매자를 위�
 | 외부 연동 | Solapi(문자 인증), Spring Mail(Gmail SMTP, 이메일 인증) |
 | 테스트 | JUnit 5, Spring Boot Test                      |
 
+
+## ERD
+### 논리 모델 (Logical)
+![Entity 논리 모델](Entity_logical.png)
+
+### 물리 모델 (Physical)
+![Entity 논리 모델](Entity_physical.png)
+
+### 데이터베이스 (Database)
+![Entity 논리 모델](databaseERD.png)
+
+
 ## 패키지 구조
 
 ```

@@ -52,9 +52,10 @@ myshop.shop
 
 ### 1. 회원 / 판매자 인증
 - 회원가입, 로그인, 비밀번호 재설정, 이메일/문자 인증(Solapi, Spring Mail)
-- JWT 기반 로그인 유지: Access Token은 `Authorization` 헤더, Refresh Token은 HttpOnly 쿠키로 전달하는 혼합 방식
+- JWT 기반 로그인 유지 (회원): Access Token, Refresh Token은 쿠키로 전달, 인증된 회원 정보는 `Authorization` 헤더로 전달하는 방식을 사용
 - Refresh Token은 Redis에 저장하여 서버 측에서 검증·무효화 가능
-- 회원/판매자용 로그인 체크 인터셉터로 접근 제어
+- 세션 기반 인증 (판매자): 로그인 시 세션에 판매자 정보 저장
+- 회원/판매자용 로그인을 체크하는 인터셉터로 접근 제어
 
 ### 2. 상품 관리
 - 상품/옵션 등록·수정·삭제, 이미지 다중 업로드

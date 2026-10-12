@@ -252,8 +252,11 @@
                         <div th:if="${mainItemDto.discountPer eq 0}">
                             <span class="product-price mb-0" th:text="|${#numbers.formatDecimal(mainItemDto.price, 0, 'COMMA', 0, 'POINT')}원|">15,900원</span>
                         </div>
-
-                        <small class="text-muted">⭐ 4.5 (1,240)</small>
+<!--                        소수점 두 번째 자리까지 표기(반올림 적용 됨)-->
+                        <small class="text-muted"
+                               th:text="|⭐ ${#numbers.formatDecimal(mainItemDto.reviewScore ?: 0.0, 1, 2)} (${#numbers.formatInteger(mainItemDto.reviewCount ?: 0, 0, 'COMMA')})|">
+                            ⭐ 4.50 (1,240)
+                        </small>
                     </div>
                 </div>
             </a>

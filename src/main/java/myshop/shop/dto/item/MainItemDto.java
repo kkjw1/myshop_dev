@@ -9,7 +9,7 @@ import myshop.shop.entity.item.ItemImage;
 import java.math.BigDecimal;
 
 @Getter @Setter
-@ToString(of = {"mainImagePath", "name", "price", "discountPer", "viewCount"})
+@ToString(of = {"mainImagePath", "name", "price", "discountPer", "viewCount", "reviewScore", "reviewCount"})
 public class MainItemDto {
     private Long itemNo;
     private String mainImagePath;
@@ -18,6 +18,8 @@ public class MainItemDto {
     private BigDecimal discountPer;
     private BigDecimal discountedPrice; // 부동소수점 오류 방지
     private Long viewCount;
+    private Double reviewScore;
+    private Long reviewCount;
 
     public MainItemDto() {
     }

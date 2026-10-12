@@ -1,8 +1,10 @@
 package myshop.shop.repository.Item;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
@@ -15,6 +17,7 @@ import myshop.shop.entity.item.Item;
 import myshop.shop.entity.item.ItemStatus;
 
 
+import myshop.shop.entity.review.QReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -28,6 +31,7 @@ import static myshop.shop.entity.QSeller.seller;
 import static myshop.shop.entity.item.QItem.item;
 import static myshop.shop.entity.item.QItemImage.itemImage;
 import static myshop.shop.entity.item.QItemOption.itemOption;
+import static myshop.shop.entity.review.QReview.review;
 
 
 @RequiredArgsConstructor
@@ -125,10 +129,19 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.name,
                         item.originalPrice.as("price"),
                         item.discountPer,
-                        item.viewCount))
+                        item.viewCount,
+                        ExpressionUtils.as(JPAExpressions
+                                .select(review.count())
+                                .from(review)
+                                .where(review.item.no.eq(item.no)), "reviewCount"),
+                        ExpressionUtils.as(JPAExpressions
+                                .select(review.score.avg())
+                                .from(review)
+                                .where(review.item.no.eq(item.no)), "reviewScore")
+                ))
                 .from(itemImage)
                 .join(itemImage.item, item)
-                .where(itemImage.isMain.eq(true), item.itemStatus.eq(ItemStatus.판매중))
+                .where(itemImage.isMain.eq(true), item.itemStatus.eq(ItemStatus.판매중), item.name.contains("상품"))
                 .orderBy(item.viewCount.desc())
                 .limit(limit)
                 .fetch();
@@ -195,5 +208,42 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .from(item)
                 .where(item.seller.no.eq(sellerNo))
                 .fetch();
+    }
+
+    @Override
+    public Page<MainItemDto> findSearchItem(Pageable pageable, String keyword) {
+
+        List<MainItemDto> content = queryFactory
+                .select(Projections.fields(MainItemDto.class,
+                        item.no.as("itemNo"),
+                        itemImage.imageUrl.as("mainImagePath"),
+                        item.name,
+                        item.originalPrice.as("price"),
+                        item.discountPer,
+                        item.viewCount,
+                        ExpressionUtils.as(JPAExpressions
+                                .select(review.count())
+                                .from(review)
+                                .where(review.item.no.eq(item.no)), "reviewCount"),
+                        ExpressionUtils.as(JPAExpressions
+                                .select(review.score.avg())
+                                .from(review)
+                                .where(review.item.no.eq(item.no)), "reviewScore")
+                ))
+                .from(itemImage)
+                .join(itemImage.item, item)
+                .where(itemImage.isMain.eq(true), item.itemStatus.eq(ItemStatus.판매중), item.name.contains(keyword))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(item.viewCount.desc())
+                .fetch();
+
+        JPAQuery<Long> count = queryFactory
+                .select(item.count())
+                .from(itemImage)
+                .join(itemImage.item, item)
+                .where(itemImage.isMain.eq(true), item.itemStatus.eq(ItemStatus.판매중), item.name.contains(keyword));
+
+        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
     }
 }

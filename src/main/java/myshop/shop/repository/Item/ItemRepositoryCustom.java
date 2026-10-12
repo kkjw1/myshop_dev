@@ -49,4 +49,10 @@ public interface ItemRepositoryCustom {
      * 판매자 페이지 -> 고객 문의 관리
      */
     List<Long> getSellerItemNo(Long sellerNo);
+
+    /**
+     * 상품 검색 화면
+     * 홈 헤더 -> 검색
+     */
+    Page<MainItemDto> findSearchItem(Pageable pageable, String keyword);
 }

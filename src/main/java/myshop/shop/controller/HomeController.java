@@ -17,6 +17,9 @@ import myshop.shop.entity.item.ItemOption;
 import myshop.shop.repository.Item.ItemOptionRepository;
 import myshop.shop.repository.Item.ItemRepository;
 import myshop.shop.service.ItemService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +40,6 @@ public class HomeController {
      */
     @GetMapping({"/", "/home"})
     public String homeForm(HttpServletRequest request, Model model) {
-//        new LoginCheckMemberDto().loginCheck(request, model);
         // 상품들 가져오기
         List<MainItemDto> mainItemDtoList = itemService.getMainItem(4L);
 
@@ -46,6 +48,20 @@ public class HomeController {
     }
 
 
+
+    /**
+     * 상품 검색 화면
+     * 홈 헤더 -> 검색
+     */
+    @GetMapping("/home/search")
+    public String homeSearchForm(@PageableDefault(size = 8) Pageable pageable,
+                                 @RequestParam String keyword, Model model) {
+        Page<MainItemDto> mainItemDtoPage = itemService.getSearchItem(pageable, keyword);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("mainItemDtoPage", mainItemDtoPage);
+        return "shop/home_search";
+    }
 
     /**
      * ExceptionController 테스트

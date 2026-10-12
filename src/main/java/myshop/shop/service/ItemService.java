@@ -258,7 +258,7 @@ public class ItemService {
 
 
     /**
-     * 메인 페이지 상품들 가져오기
+     * 메인 화면 상품 출력
      */
     public List<MainItemDto> getMainItem(Long limit) {
         List<MainItemDto> mainItemDtoList = itemRepository.findMainItem(limit);
@@ -278,6 +278,18 @@ public class ItemService {
     }
 
 
+    /**
+     * 상품 검색 화면
+     * 홈 헤더 -> 검색
+     */
+    public Page<MainItemDto> getSearchItem(Pageable pageable, String keyword) {
+        log.info("keyword={}", keyword);
+        Page<MainItemDto> searchItemList = itemRepository.findSearchItem(pageable, keyword);
+        for (MainItemDto searchItem : searchItemList) {
+            searchItem.setDiscountedPrice(getDiscountedPrice(searchItem.getPrice(), searchItem.getDiscountPer()));
+        }
+        return searchItemList;
+    }
 
     /**
      * 상품 클릭 -> 상품 상세 가져오기

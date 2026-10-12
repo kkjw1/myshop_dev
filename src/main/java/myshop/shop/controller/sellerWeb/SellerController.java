@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import myshop.shop.controller.memberWeb.MemberController;
 import myshop.shop.dto.seller.LoginCheckSellerDto;
 import myshop.shop.dto.seller.LoginSellerDto;
 import myshop.shop.entity.Seller;
@@ -77,10 +78,16 @@ public class SellerController {
     }
 
 
-    // todo: 추후 삭제 필요
-    @GetMapping("/seller/order_delivery_detail")
-    public String order_delivery_detail() {
-        return "seller/delivery/order_delivery_detail";
+    /**
+     * 판매자 로그아웃
+     */
+    @GetMapping("/seller/logout")
+    public String sellerLogout(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/";
     }
 
 }

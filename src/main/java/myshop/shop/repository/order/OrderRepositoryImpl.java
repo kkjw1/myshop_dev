@@ -4,7 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import myshop.shop.controller.HomeItemController.CheckDirectOrderDto;
+import myshop.shop.controller.memberWeb.OrderController;
 import myshop.shop.dto.order.DirectOrderDto;
 
 import static myshop.shop.entity.item.QItem.item;
@@ -20,7 +20,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom{
 
     // checkDirectOrderDto(itemNo=3, memberNo=5, itemOptionNo=null, itemImageNo=7, count=1)
     @Override
-    public DirectOrderDto getDirectOrder(CheckDirectOrderDto checkDirectOrderDto) {
+    public DirectOrderDto getDirectOrder(OrderController.CheckDirectOrderDto checkDirectOrderDto) {
         // 옵션 X
         if (checkDirectOrderDto.getItemOptionNo() == null) {
             return queryFactory

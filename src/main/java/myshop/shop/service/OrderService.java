@@ -2,7 +2,7 @@ package myshop.shop.service;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import myshop.shop.controller.HomeItemController.CheckDirectOrderDto;
+import myshop.shop.controller.memberWeb.OrderController;
 import myshop.shop.dto.order.*;
 import myshop.shop.entity.orderItem.OrderItem;
 import myshop.shop.entity.delivery.Delivery;
@@ -113,7 +113,7 @@ public class OrderService {
      * 주문/결제 폼
      * 상품 상세 폼 -> 바로 구매
      */
-    public DirectOrderDto getDirectOrder(CheckDirectOrderDto checkDirectOrderDto) {
+    public DirectOrderDto getDirectOrder(OrderController.CheckDirectOrderDto checkDirectOrderDto) {
         DirectOrderDto directOrderDto = orderRepository.getDirectOrder(checkDirectOrderDto);
 
         directOrderDto.setCount(checkDirectOrderDto.getCount());

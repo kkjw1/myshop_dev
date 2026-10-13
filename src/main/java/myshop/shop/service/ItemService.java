@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import myshop.shop.controller.HomeItemController.CheckDirectOrderDto;
+import myshop.shop.controller.memberWeb.OrderController;
 import myshop.shop.controller.sellerWeb.ItemController.BulkModifyItemDto;
 import myshop.shop.dto.item.*;
 import myshop.shop.entity.Seller;
@@ -380,7 +380,7 @@ public class ItemService {
      * DirectOrderDto(itemNo=3, memberNo=5, itemOptionNo=null, itemImageNo=7, count=6)
      * DirectOrderDto(itemNo=4, memberNo=5, itemOptionNo=7, itemImageNo=9, count=1)
      */
-    public void reserveStock(CheckDirectOrderDto checkDirectOrderDto) {
+    public void reserveStock(OrderController.CheckDirectOrderDto checkDirectOrderDto) {
 
         Long optionNo = checkDirectOrderDto.getItemOptionNo();
         Long itemNo = checkDirectOrderDto.getItemNo();

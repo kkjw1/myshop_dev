@@ -1,8 +1,8 @@
 package myshop.shop.repository.order;
 
-import myshop.shop.controller.HomeItemController;
+import myshop.shop.controller.memberWeb.OrderController;
 import myshop.shop.dto.order.DirectOrderDto;
 
 public interface OrderRepositoryCustom {
-    DirectOrderDto getDirectOrder(HomeItemController.CheckDirectOrderDto checkDirectOrderDto);
+    DirectOrderDto getDirectOrder(OrderController.CheckDirectOrderDto checkDirectOrderDto);
 }

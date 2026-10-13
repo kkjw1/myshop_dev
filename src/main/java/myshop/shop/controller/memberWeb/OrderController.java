@@ -6,18 +6,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import myshop.shop.controller.HomeItemController.CheckDirectOrderDto;
 import myshop.shop.dto.order.*;
 import myshop.shop.dto.address.ManageAddressDto;
 import myshop.shop.dto.cart.ManageCartDto;
 import myshop.shop.dto.member.LoginCheckMemberDto;
+import myshop.shop.entity.item.Item;
+import myshop.shop.entity.item.ItemOption;
 import myshop.shop.entity.order.Order;
+import myshop.shop.repository.Item.ItemOptionRepository;
+import myshop.shop.repository.Item.ItemRepository;
 import myshop.shop.service.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,7 +39,12 @@ public class OrderController {
     private final OrderService orderService;
     private final ItemService itemService;
 
+    private final ItemRepository itemRepository;
+    private final ItemOptionRepository itemOptionRepository;
+
     private final RedisTemplate<String, Object> redisTemplate;
+
+
 
     /**
      * 주문/결제 폼
@@ -46,8 +55,7 @@ public class OrderController {
                             @AuthenticationPrincipal LoginCheckMemberDto loginCheckMemberDto,
                             HttpServletRequest request, Model model) {
         log.info("cartToOrderDto={}", cartToOrderDto);
-//        new LoginCheckMemberDto().loginCheck(request, model);
-//        LoginCheckMemberDto loginCheckMemberDto = (LoginCheckMemberDto) request.getSession().getAttribute(LOGIN_MEMBER);
+
         Long memberNo = loginCheckMemberDto.getNo();
 
         // 구매 상품 재고 선점
@@ -86,20 +94,38 @@ public class OrderController {
 
 
 
+
     /**
      * 주문/결제 폼
-     * 상품 상세 폼 -> 바로 구매(2. 주문/결제 폼에 띄울 데이터 불러오기)
+     * 상품 상세 폼 -> 바로 구매
      */
-    @GetMapping("/myPage/directOrder")
+    @PostMapping("/myPage/directOrder")
     public String directOrderForm(@ModelAttribute CheckDirectOrderDto checkDirectOrderDto,
                                   @AuthenticationPrincipal LoginCheckMemberDto loginCheckMemberDto,
-                                  HttpServletRequest request, Model model) {
-//        new LoginCheckMemberDto().loginCheck(request, model);
+                                  RedirectAttributes redirectAttributes,
+                                  Model model) {
 
-//        LoginCheckMemberDto loginCheckMemberDto = (LoginCheckMemberDto) request.getSession().getAttribute(LOGIN_MEMBER);
         Long memberNo = loginCheckMemberDto.getNo();
         checkDirectOrderDto.setMemberNo(memberNo);
         log.info("주문/결제 폼, checkDirectOrderDto={}", checkDirectOrderDto);
+
+        // 재고 확인
+        int stock;
+        if (checkDirectOrderDto.getItemOptionNo() == null) {
+            Item item = itemRepository.findById(checkDirectOrderDto.getItemNo()).orElse(null);
+            stock = item.getTotalStock();
+        } else {
+            ItemOption itemOption = itemOptionRepository.findById(checkDirectOrderDto.getItemOptionNo()).orElse(null);
+            stock = itemOption.getOptionStock();
+        }
+        if (stock < checkDirectOrderDto.getCount()) {
+            // 재고 없는 경우 알람띄우기
+            log.info("재고 없음, stock={}, 요청개수={}", stock, checkDirectOrderDto.getCount());
+            redirectAttributes.addFlashAttribute("alertMessage", "재고가 부족합니다.");
+            return "redirect:/item?itemNo=" + checkDirectOrderDto.getItemNo();
+        }
+        // 구매 상품 재고 선점
+        itemService.reserveStock(checkDirectOrderDto);
 
         // 배송지
         ManageAddressDto manageAddressDto = addressService.getAddressByMemberNo(memberNo);
@@ -108,7 +134,7 @@ public class OrderController {
         DirectOrderDto directOrder = orderService.getDirectOrder(checkDirectOrderDto);
         log.info("directOrder={}", directOrder);
 
-
+        // 배송지 설정
         BigDecimal totalProductPrice = directOrder.getPrice().multiply(BigDecimal.valueOf(directOrder.getCount()));
         int deliveryFee = totalProductPrice.compareTo(BigDecimal.valueOf(30000)) > 0 ? 0 : 3000;
 
@@ -119,6 +145,35 @@ public class OrderController {
         model.addAttribute("directOrder", directOrder);
 
         return "member/mypage/direct_order";
+    }
+    @Getter @Setter
+    @ToString(of = {"itemNo", "memberNo", "itemOptionNo", "itemImageNo", "count"})
+    public static class CheckDirectOrderDto {
+        private Long itemNo;
+        private Long memberNo;
+        private Long itemOptionNo;      // null or Data
+        private Long itemImageNo;
+        private int count;
+
+        public CheckDirectOrderDto() {
+        }
+
+        public CheckDirectOrderDto(Long itemNo, Long memberNo, Long itemOptionNo, Long itemImageNo, int count) {
+            this.itemNo = itemNo;
+            this.memberNo = memberNo;
+            this.itemOptionNo = itemOptionNo;
+            this.itemImageNo = itemImageNo;
+            this.count = count;
+        }
+    }
+
+    /**
+     * 동시성 테스트용
+     */
+    @GetMapping("/test")
+    @ResponseBody
+    public String test() {
+        return "재고가 부족합니다.";
     }
 
 

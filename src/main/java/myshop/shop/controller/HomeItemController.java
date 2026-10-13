@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +38,6 @@ import static myshop.shop.controller.memberWeb.MemberController.SessionConst.LOG
 public class HomeItemController {
 
     private final ItemService itemService;
-    private final ItemRepository itemRepository;
-    private final ItemOptionRepository itemOptionRepository;
     private final ReviewService reviewService;
     private final InquiryService inquiryService;
 
@@ -65,6 +64,7 @@ public class HomeItemController {
         log.info("detailItemReviewDtoPage={}", detailItemReviewDtoPage);
         log.info("reviewScoreDto={}", reviewScoreDto);
         log.info("detailItemInquiryDtoPage={}", detailItemInquiryDtoPage);
+        log.info("detailItemDto={}", detailItemDto);
         log.info("itemNo={}, 조회수 1증가", itemNo);
 
         model.addAttribute("detailItemInquiryDtoPage", detailItemInquiryDtoPage);
@@ -142,56 +142,4 @@ public class HomeItemController {
         return ResponseEntity.ok(goodCount);
     }
 
-
-    /**
-     * 상품 상세 폼 -> 바로 구매(1. 로그인 체크, 재고 확인, 재고 선점)
-     */
-    @PostMapping("/item/checkDirectOrder")
-    @ResponseBody
-    public String checkDirectOrder(@RequestBody CheckDirectOrderDto checkDirectOrderDto, HttpServletRequest request, Model model) {
-        // 로그인 체크
-        HttpSession session = request.getSession();
-        if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            return "loginFail";
-        }
-        checkDirectOrderDto.setMemberNo(((LoginCheckMemberDto) session.getAttribute(LOGIN_MEMBER)).getNo());
-
-        // 재고 확인
-        int stock;
-        if (checkDirectOrderDto.getItemOptionNo() == null) {
-            Item item = itemRepository.findById(checkDirectOrderDto.getItemNo()).orElse(null);
-            stock = item.getTotalStock();
-        } else {
-            ItemOption itemOption = itemOptionRepository.findById(checkDirectOrderDto.getItemOptionNo()).orElse(null);
-            stock = itemOption.getOptionStock();
-        }
-        if (stock < checkDirectOrderDto.count) {
-            return "soldOut";
-        }
-
-        // 구매 상품 재고 선점
-        itemService.reserveStock(checkDirectOrderDto);
-
-        return "ok";
-    }
-    @Getter @Setter
-    @ToString(of = {"itemNo", "memberNo", "itemOptionNo", "itemImageNo", "count"})
-    public static class CheckDirectOrderDto {
-        private Long itemNo;
-        private Long memberNo;
-        private Long itemOptionNo;      // null or Data
-        private Long itemImageNo;
-        private int count;
-
-        public CheckDirectOrderDto() {
-        }
-
-        public CheckDirectOrderDto(Long itemNo, Long memberNo, Long itemOptionNo, Long itemImageNo, int count) {
-            this.itemNo = itemNo;
-            this.memberNo = memberNo;
-            this.itemOptionNo = itemOptionNo;
-            this.itemImageNo = itemImageNo;
-            this.count = count;
-        }
-    }
 }

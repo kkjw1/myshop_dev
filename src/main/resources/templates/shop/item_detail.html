@@ -458,90 +458,103 @@
 
                 <!--옵션 O-->
                 <div th:if="${not #lists.isEmpty(detailItemDto.detailItemOptionDtoList)}">
-                    <div class="form-group">
-                        <label class="small font-weight-bold">옵션 선택</label>
-                        <select class="form-control" id="optionSelect">
-                            <option selected>옵션 선택</option>
-                            <option th:each="detailItemOptionDto:${detailItemDto.detailItemOptionDtoList}"
-                                    th:value="${detailItemOptionDto.itemOptionNo}"
-                                    th:option-stock="${detailItemOptionDto.optionStock}"
-                                    th:text="|${detailItemOptionDto.name} (+${detailItemOptionDto.additionalPrice})|">화이트 (본상품)</option>
-                        </select>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label class="small font-weight-bold">수량</label>
-                        <div class="d-flex align-items-center">
-                            <input type="number" id="stockInput" class="form-control"
-                                   value="1" min="1" max="1"
-                                   style="width: 100px;"
-                                   oninput="validateStock(this)">
-                            <span class="ml-3 small text-muted" id="stockDisplay">옵션을 선택해주세요.</span>
-                        </div>
-                    </div>
+                    <!-- 로그인 여부 확인용 hidden input -->
+                    <input type="hidden" id="isLoginCheck" th:value="${isLogin}">
 
-                    <div class="row no-gutters mt-4">
-                        <div class="col-6 pr-2">
-                            <button id="cartBtn" class="btn btn-cart btn-block"
-                                    th:item-no="${detailItemDto.itemNo}" disabled
-                                    onclick="toggleCart(this)">장바구니 담기</button>
-                        </div>
-                        <div class="col-6 pl-2">
-                            <button id="buyBtn" class="btn btn-buy btn-block"
-                                    th:item-no="${detailItemDto.itemNo}"
-                                    onclick="directOrder(this)" disabled>바로구매</button>
-                        </div>
-                    </div>
+                    <form th:action="@{/myPage/directOrder}" method="post" id="directOrderForm">
+                        <input type="hidden" id="itemNo" name="itemNo" th:value="${detailItemDto.itemNo}">
+                        <input type="hidden" id="itemImageNo" name="itemImageNo" th:value="${detailItemDto.itemImageMap.keySet()[0]}">
 
+                        <div class="form-group">
+                            <label class="small font-weight-bold">옵션 선택</label>
+                            <select class="form-control" id="optionSelect" name="itemOptionNo">
+                                <option selected>옵션 선택</option>
+                                <option th:each="detailItemOptionDto:${detailItemDto.detailItemOptionDtoList}"
+                                        th:value="${detailItemOptionDto.itemOptionNo}"
+                                        th:option-stock="${detailItemOptionDto.optionStock}"
+                                        th:text="|${detailItemOptionDto.name} (+${detailItemOptionDto.additionalPrice})|">화이트 (본상품)</option>
+                            </select>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="small font-weight-bold">수량</label>
+                            <div class="d-flex align-items-center">
+                                <input type="number" id="stockInput" name="count" class="form-control"
+                                       value="1" min="1" max="1"
+                                       style="width: 100px;"
+                                       oninput="validateStock(this)">
+                                <span class="ml-3 small text-muted" id="stockDisplay">옵션을 선택해주세요.</span>
+                            </div>
+                        </div>
+
+                        <div class="row no-gutters mt-4">
+                            <div class="col-6 pr-2">
+                                <!-- 장바구니 담기 (type="button") -->
+                                <button type="button" id="cartBtn" class="btn btn-cart btn-block"
+                                        th:item-no="${detailItemDto.itemNo}" disabled
+                                        onclick="toggleCart(this)">장바구니 담기</button>
+                            </div>
+                            <div class="col-6 pl-2">
+                                <!-- 바로구매 (로그인 체크를 위해 onclick 추가 및 form submit 제어) -->
+                                <button type="button" id="buyBtn" class="btn btn-buy btn-block" disabled
+                                        onclick="checkLoginAndSubmit()">바로구매</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
 
                 <!--옵션 X-->
                 <div th:if="${#lists.isEmpty(detailItemDto.detailItemOptionDtoList)}">
-                    <div class="form-group">
-                        <label class="small font-weight-bold">옵션 선택</label>
-                        <select class="form-control" id="optionSelect2">
-                            <option selected value="">단일 상품 (옵션 없음)</option>
-                        </select>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label class="small font-weight-bold">수량</label>
-                        <div class="d-flex align-items-center">
-                            <input type="number" id="stockInput2" class="form-control"
-                                   value="1" min="1" max="1"
-                                   th:max="${detailItemDto.totalStock}"
-                                   style="width: 100px;"
-                                   oninput="validateStock(this)">
-                            <span class="ml-3 small text-muted input-danger" th:if="${detailItemDto.totalStock eq 0}">품절된 상품입니다.</span>
-                            <span class="ml-3 small text-muted" th:if="${detailItemDto.totalStock gt 0}" id="stockDisplay2" th:text="|(남은 재고: ${detailItemDto.totalStock}개)|">남은 재고</span>
-                        </div>
-                    </div>
+                    <form th:action="@{/myPage/directOrder}" method="post" id="directOrderForm2">
+                        <input type="hidden" id="itemNo2" name="itemNo" th:value="${detailItemDto.itemNo}">
+                        <input type="hidden" id="itemImageNo2" name="itemImageNo" th:value="${detailItemDto.itemImageMap.keySet()[0]}">
 
-                    <!--재고없음-->
-                    <div th:if="${detailItemDto.totalStock eq 0}">
-                        <div class="row no-gutters mt-4">
-                            <div class="col-6 pr-2">
-                                <button class="btn btn-cart btn-block" disabled>장바구니 담기</button>
-                            </div>
-                            <div class="col-6 pl-2">
-                                <button class="btn btn-buy btn-block" disabled>바로구매</button>
+                        <div class="form-group">
+                            <label class="small font-weight-bold">옵션 선택</label>
+                            <select class="form-control" id="optionSelect2" name="itemOptionNo">
+                                <option selected value="">단일 상품 (옵션 없음)</option>
+                            </select>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="small font-weight-bold">수량</label>
+                            <div class="d-flex align-items-center">
+                                <input type="number" id="stockInput2" name="count" class="form-control"
+                                       value="1" min="1" max="1"
+                                       th:max="${detailItemDto.totalStock}"
+                                       style="width: 100px;"
+                                       oninput="validateStock(this)">
+                                <span class="ml-3 small text-muted input-danger" th:if="${detailItemDto.totalStock eq 0}">품절된 상품입니다.</span>
+                                <span class="ml-3 small text-muted" th:if="${detailItemDto.totalStock gt 0}" id="stockDisplay2" th:text="|(남은 재고: ${detailItemDto.totalStock}개)|">남은 재고</span>
                             </div>
                         </div>
-                    </div>
 
-                    <div th:if="${detailItemDto.totalStock gt 0}">
-                        <div class="row no-gutters mt-4">
-                            <div class="col-6 pr-2">
-                                <button id="cartBtn2" class="btn btn-cart btn-block"
-                                        th:item-no="${detailItemDto.itemNo}"
-                                        onclick="toggleCart(this)">장바구니 담기</button>
-                            </div>
-                            <div class="col-6 pl-2">
-                                <button id="buyBtn2" class="btn btn-buy btn-block"
-                                        th:item-no="${detailItemDto.itemNo}"
-                                        onclick="directOrder(this)">바로구매</button>
+                        <!--재고없음-->
+                        <div th:if="${detailItemDto.totalStock eq 0}">
+                            <div class="row no-gutters mt-4">
+                                <div class="col-6 pr-2">
+                                    <button type="button" class="btn btn-cart btn-block" disabled>장바구니 담기</button>
+                                </div>
+                                <div class="col-6 pl-2">
+                                    <button type="button" class="btn btn-buy btn-block" disabled>바로구매</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                        <!--재고있음-->
+                        <div th:if="${detailItemDto.totalStock gt 0}">
+                            <div class="row no-gutters mt-4">
+                                <div class="col-6 pr-2">
+                                    <button type="button" id="cartBtn2" class="btn btn-cart btn-block"
+                                            th:item-no="${detailItemDto.itemNo}"
+                                            onclick="toggleCart(this)">장바구니 담기</button>
+                                </div>
+                                <div class="col-6 pl-2">
+                                    <button type="button" id="buyBtn2" class="btn btn-buy btn-block"
+                                            onclick="checkLoginAndSubmit()">바로구매</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
             </div>
@@ -795,6 +808,16 @@
 
 <script th:inline="javascript">
 
+    /*<![CDATA[*/
+    // 리다이렉트될 때 전달된 flashAttribute를 자바스크립트 변수로 받음
+    const alertMessage = [[${alertMessage}]];
+
+    if (alertMessage) {
+        alert(alertMessage);
+    }
+    /*]]>*/
+
+
     //optionSelect가 변경될 때마다 실행
     document.addEventListener('DOMContentLoaded', function() {
         const optionSelect = document.getElementById('optionSelect');
@@ -847,58 +870,20 @@
         }
     });
 
-    // 바로 구매
-    async function directOrder(button) {
-        const itemNo = button.getAttribute('item-no');
-        const count = document.getElementById('stockInput')?.value || document.getElementById('stockInput2').value;
-        const itemOptionNo = document.getElementById('optionSelect')?.value || document.getElementById('optionSelect2').value;
-        const itemImageNo = document.getElementById('mainImage').value;
-
-        // Cart컨트롤러 만들기
-
-        const CheckDirectOrderDto = {
-            itemNo: itemNo,
-            memberNo: null,
-            itemOptionNo: itemOptionNo,
-            itemImageNo: itemImageNo,
-            count: count
-        };
-
-        const res = await fetch('/item/checkDirectOrder', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(CheckDirectOrderDto)
-        });
-
-        const resVal = await res.text();
-        if(resVal === "soldOut") {
-            alert("재고가 부족합니다.");
-            location.href = '/item?itemNo='+ itemNo;
-        } else if (resVal === "loginFail") {
-            location.href = '/login?redirectURL=/item?itemNo=' + itemNo;
-        } else {
-            // CheckDirectOrderDto 내용으로 객체 생성
-            const orderData = { ...CheckDirectOrderDto };
-
-            // 값이 없거나, 문자열 "null", 진짜 null인 속성들을 동적으로 제거
-            Object.keys(orderData).forEach(key => {
-                const val = orderData[key];
-                if (val === null || val === undefined || val === '' || val === 'null') {
-                    delete orderData[key];
-                }
-            });
-
-            // 결과 예시: ?itemNo=3&itemImageNo=7&count=3 (memberNo와 itemOptionNo는 깔끔히 제외됨)
-            const queryString = new URLSearchParams(orderData).toString();
-            location.href = '/myPage/directOrder?' + queryString;
-        }
-    }
-
 
     // 장바구니 담기
     async function toggleCart(button) {
+        // 로그인 체크
+        const isLoginInput = document.getElementById('isLoginCheck') || document.getElementById('inquiry-isLogin');
+        const isLogin = isLoginInput ? isLoginInput.value === "true" : false;
+
+        if (!isLogin) {
+            alert("로그인이 필요한 서비스입니다.");
+            const path = location.pathname + location.search;
+            location.href = '/login?redirectURL=' + encodeURIComponent(path);
+            return; // 로그인이 안 되어 있으면 여기서 함수 종료 및 이동
+        }
+
         const itemNo = button.getAttribute('item-no');
         const count = document.getElementById('stockInput')?.value || document.getElementById('stockInput2').value;
         const itemOptionNo = document.getElementById('optionSelect')?.value || document.getElementById('optionSelect2').value;
@@ -1298,6 +1283,33 @@
         } else {
             body.style.display = 'none';
             if (icon) icon.textContent = '▼';
+        }
+    }
+
+
+    // 바로구매 버튼 클릭 시 로그인 체크 및 폼 제출 함수
+    function checkLoginAndSubmit() {
+        // HTML에 심어둔 isLogin 값 가져오기 (문자열 "true" 혹은 "false")
+        const isLoginInput = document.getElementById('isLoginCheck') || document.getElementById('inquiry-isLogin');
+        const isLogin = isLoginInput ? isLoginInput.value === "true" : false;
+
+        if (!isLogin) {
+            alert("로그인이 필요한 서비스입니다.");
+            const path = location.pathname + location.search;
+            location.href = '/login?redirectURL=' + encodeURIComponent(path);
+            return;
+        }
+
+        // 로그인이 되어 있다면 폼 제출 수행 (옵션 O 혹은 옵션 X 폼)
+        const form1 = document.getElementById('directOrderForm');
+        const form2 = document.getElementById('directOrderForm2');
+
+        if (form1 && form1.querySelector('#optionSelect')?.value !== "옵션 선택") {
+            form1.submit();
+        } else if (form2) {
+            form2.submit();
+        } else {
+            alert("옵션을 선택해주세요.");
         }
     }
 

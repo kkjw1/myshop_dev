@@ -1,13 +1,16 @@
 package myshop.shop.controller.memberWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import myshop.shop.dto.cancelRequest.ManageCancelReturnDto;
 import myshop.shop.dto.cancelRequest.SaveCancelRequestDto;
 import myshop.shop.dto.member.LoginCheckMemberDto;
 import myshop.shop.dto.returnRequest.SaveReturnRequestDto;
+import myshop.shop.exception.MemberMismatchException;
 import myshop.shop.service.CancelRequestService;
+import myshop.shop.service.MemberService;
 import myshop.shop.service.ReturnRequestService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -26,6 +29,7 @@ public class CancelReturnController {
 
     private final CancelRequestService cancelRequestService;
     private final ReturnRequestService returnRequestService;
+    private final MemberService memberService;
 
 
     /**
@@ -33,8 +37,14 @@ public class CancelReturnController {
      * 주문 목록/배송 조회 -> 주문 취소 신청
      */
     @PostMapping("/myPage/cancel_request")
-    public String cancelRequestForm(@ModelAttribute SaveCancelRequestDto saveCancelRequestDto, RedirectAttributes redirectAttributes) {
-        log.info("saveCancelRequestDto={}", saveCancelRequestDto);
+    public String cancelRequestForm(@ModelAttribute SaveCancelRequestDto saveCancelRequestDto,
+                                    @AuthenticationPrincipal LoginCheckMemberDto loginCheckMemberDto) {
+        log.info("saveCancelRequestDto.memberNo={}, loginCheckMemberDto.memberNo={}",
+                saveCancelRequestDto.getMemberNo(), loginCheckMemberDto.getNo());
+
+        if (!memberService.checkLogin(saveCancelRequestDto.getMemberNo(), loginCheckMemberDto.getNo())) {
+            throw new MemberMismatchException("주문 취소 신청 회원 정보가 일치하지 않습니다.");
+        }
 
         cancelRequestService.saveCancelRequest(saveCancelRequestDto);
         return "redirect:/myPage/orderList";

@@ -286,11 +286,11 @@ public class OrderController {
      * 주문 목록/배송 조회 폼 -> 주문 상세 보기
      */
     @GetMapping("/order/complete")
-    public String orderComplete(@RequestParam("orderNo") Long orderNo, HttpServletRequest request, Model model) {
-//        new LoginCheckMemberDto().loginCheck(request, model);
+    public String orderComplete(@RequestParam("orderNo") Long orderNo,
+            @AuthenticationPrincipal LoginCheckMemberDto loginCheckMemberDto, Model model) {
 
         log.info("orderComplete, orderNo={}", orderNo);
-        DetailOrderDto detailOrderDto = orderService.getDetailOrder(orderNo);
+        DetailOrderDto detailOrderDto = orderService.getDetailOrder(orderNo, loginCheckMemberDto.getNo());
         log.info("detailOrderDto={}", detailOrderDto);
 
         model.addAttribute("detailOrderDto", detailOrderDto);

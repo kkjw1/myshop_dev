@@ -186,4 +186,12 @@ public class MemberService {
     public List<Address> getAddress() {
         return null;
     }
+
+
+    /**
+     * 로그인 검증
+     */
+    public boolean checkLogin(Long requestMember, Long authMember) {
+        return requestMember.equals(authMember);
+    }
 }

@@ -9,7 +9,7 @@ public interface OrderItemRepositoryCustom {
     /**
      * 주문 목록 상세
      */
-    DetailOrderDto getDetailOrder(Long orderNo);
+    DetailOrderDto getDetailOrder(Long orderNo, Long memberNo);
 
     /**
      * 주문 목록/배송 조회

@@ -91,8 +91,8 @@ public class OrderService {
     /**
      * 주문 상세 내역 불러오기
      */
-    public DetailOrderDto getDetailOrder(Long orderNo) {
-        DetailOrderDto detailOrderDto = orderItemRepository.getDetailOrder(orderNo);
+    public DetailOrderDto getDetailOrder(Long orderNo, Long memberNo) {
+        DetailOrderDto detailOrderDto = orderItemRepository.getDetailOrder(orderNo, memberNo);
 
         List<DetailOrderItemDto> detailOrderItemDtoList = detailOrderDto.getDetailOrderItemDtoList();
 

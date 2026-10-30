@@ -2,6 +2,7 @@ package myshop.shop.controller;
 
 import jakarta.persistence.*;
 import lombok.extern.slf4j.Slf4j;
+import myshop.shop.exception.MemberMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.FileNotFoundException;
 
@@ -189,6 +191,19 @@ public class ExceptionController {
     public String fileNotFoundException(Model model, Exception e) {
         log.info("FileNotFoundException: {}", e.getMessage());
         setExceptionModel(model, "404", "파일을 찾을 수 없습니다.", "요청하신 파일이 삭제되었거나, 경로가 잘못되었습니다. 파일명을 다시 확인해 주세요.\n" + e.getMessage());
+        return "error/generic_error";
+    }
+
+
+    /**
+     * Java 기본 RuntimeException 관련 예외
+     */
+    @ExceptionHandler(MemberMismatchException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String forbidden(Model model, Exception e) {
+        log.info("Forbidden: {}", e.getMessage());
+        setExceptionModel(model, "403", "회원 정보 불일치",
+                "다른 사람의 정보(주문 내역 등)에 접근하거나 조작하였습니다.\n" + e.getMessage());
         return "error/generic_error";
     }
 

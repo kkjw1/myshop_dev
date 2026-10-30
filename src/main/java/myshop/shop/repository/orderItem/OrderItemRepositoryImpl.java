@@ -27,7 +27,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryCustom {
     private final EntityManager em;
 
     @Override
-    public DetailOrderDto getDetailOrder(Long orderNo) {
+    public DetailOrderDto getDetailOrder(Long orderNo, Long memberNo) {
 
         DetailOrderDto detailOrderDto = queryFactory
                 .select(Projections.fields(DetailOrderDto.class,
@@ -42,7 +42,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepositoryCustom {
                 ))
                 .from(orderItem)
                 .leftJoin(orderItem.order, order)
-                .where(order.no.eq(orderNo))
+                .where(order.no.eq(orderNo), order.member.no.eq(memberNo))
                 .fetchFirst();
 
         List<DetailOrderItemDto> detailOrderItemDtoList = queryFactory

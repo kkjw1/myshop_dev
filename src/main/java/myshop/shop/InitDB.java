@@ -19,10 +19,13 @@ import myshop.shop.entity.inquiry.InquiryCategory;
 import myshop.shop.entity.inquiry.InquiryStatus;
 import myshop.shop.entity.item.Item;
 import myshop.shop.entity.item.ItemCategory;
+import myshop.shop.entity.item.ItemOption;
 import myshop.shop.entity.item.ItemStatus;
 import myshop.shop.entity.member.Gender;
 import myshop.shop.entity.member.Member;
 import myshop.shop.entity.member.MemberLevel;
+import myshop.shop.entity.order.Order;
+import myshop.shop.entity.orderItem.OrderItem;
 import myshop.shop.entity.orderItem.OrderItemStatus;
 import myshop.shop.entity.returnRequest.ReturnReasonCode;
 import myshop.shop.entity.returnRequest.ReturnRequestStatus;
@@ -40,9 +43,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static myshop.shop.InitSeedData.*;
 
 
 @Component
@@ -162,11 +170,13 @@ public class InitDB {
                     emptySubImageList, "상품옵션있음, 추가이미지없음", ItemStatus.판매중,true));
 
 
+/*
             for (int i=0; i<50; i++) {
                 itemService.saveItem(new AddItemDto(sellerNo, "페이징테스트" + i, ItemCategory.신발, i*1000, i, i,
                         emptyAddItemOptionDtoList, null, "/shop_image/c9cf742d-c0b0-4b8d-9253-cc32823d36db.png", null,
                         emptySubImageList, "상품옵션없음, 추가이미지없음", ItemStatus.판매중,true));
             }
+*/
 
             /**
              * 장바구니 데이터
@@ -308,6 +318,186 @@ public class InitDB {
 
             em.flush();
             em.clear();
+
+            /**
+             * AI 기능(상담 에이전트 / 리뷰 RAG) 시드 데이터
+             */
+            initAiSeedData(sellerNo);
+
+            em.flush();
+            em.clear();
+        }
+
+
+        /**
+         * AI 기능 시드 데이터
+         * 1. 리뷰 작성 회원 20명 (reviewer01 ~ reviewer20 / password)
+         * 2. 판매자 "test" 1명의 상품 22개 (InitSeedData.ITEMS)
+         * 3. 상품마다 리뷰 20개, 문의 3~4개
+         * 4. 상담 에이전트 시나리오용 주문 (상품준비중 / 배송중 / 배송완료, 타인 주문)
+         */
+        private void initAiSeedData(Long sellerNo) {
+            // 리뷰 작성 회원
+            List<Long> reviewerNos = new ArrayList<>();
+            String reviewerPassword = passwordEncoder.encode("password");
+            for (int i = 0; i < REVIEWER_NAMES.size(); i++) {
+                String reviewerId = String.format("reviewer%02d", i + 1);
+                Member reviewer = memberRepository.save(new Member(reviewerId, reviewerId + "@myshop.test", reviewerPassword,
+                        REVIEWER_NAMES.get(i), "SKT", String.format("010-1111-%04d", i + 1),
+                        i % 2 == 0 ? Gender.MAN : Gender.WOMAN, MemberLevel.normal));
+                reviewerNos.add(reviewer.getNo());
+            }
+
+            // 상품 저장
+            for (SeedItem seedItem : ITEMS) {
+                List<AddItemOptionDto> optionDtoList = seedItem.options().stream()
+                        .map(o -> new AddItemOptionDto(o.name(), o.additionalPrice(), o.stock()))
+                        .toList();
+                itemService.saveItem(new AddItemDto(sellerNo, seedItem.name(), seedItem.category(), seedItem.price(),
+                        seedItem.totalStock(), seedItem.discountPer(), new ArrayList<>(optionDtoList), null,
+                        seedItem.mainImage(), null, new ArrayList<>(seedItem.subImages()), seedItem.content(),
+                        ItemStatus.판매중, true));
+            }
+            em.flush();
+            em.clear();
+
+            // 상품명 -> 상품(옵션 포함)
+            Map<String, Item> seedItemMap = new HashMap<>();
+            for (SeedItem seedItem : ITEMS) {
+                Item item = em.createQuery("select distinct i from Item i left join fetch i.itemOptions where i.name = :name", Item.class)
+                        .setParameter("name", seedItem.name())
+                        .getSingleResult();
+                seedItemMap.put(seedItem.name(), item);
+            }
+
+            // 리뷰, 문의 저장
+            for (SeedItem seedItem : ITEMS) {
+                Item item = seedItemMap.get(seedItem.name());
+                List<SeedReview> reviews = seedItem.reviews();
+                for (int i = 0; i < reviews.size(); i++) {
+                    SeedReview r = reviews.get(i);
+                    reviewRepository.save(new Review(item, reviewerNos.get(i % reviewerNos.size()), r.optionName(),
+                            1, r.score(), r.content()));
+                }
+
+                List<SeedInquiry> inquiries = seedItem.inquiries();
+                for (int i = 0; i < inquiries.size(); i++) {
+                    SeedInquiry q = inquiries.get(i);
+                    Long memberNo = reviewerNos.get((i * 3 + seedItem.name().length()) % reviewerNos.size());
+                    if (q.answer() == null) {
+                        inquiryRepository.save(new Inquiry(item, memberNo, q.optionName(), q.category(), q.title(),
+                                q.content(), InquiryStatus.답변대기));
+                    } else {
+                        inquiryRepository.save(new Inquiry(item, memberNo, q.optionName(), q.category(), q.title(),
+                                q.content(), InquiryStatus.답변완료, q.answer()));
+                    }
+                }
+            }
+            em.flush();
+            em.clear();
+
+            /*
+             * 상담 에이전트 시나리오 주문
+             * - test 회원: "어제 산 신발 언제 와요? 사이즈 잘못 골랐는데 취소돼요?" -> 상품준비중(취소 가능)
+             *              "셔츠 어디쯤 왔어요?" -> 배송중(취소 불가, 반품 안내)
+             *              "패딩 반품하고 싶어요" -> 배송완료(반품 가능)
+             *              "오늘 주문한 거 취소해줘" -> 상품 2개 주문(어느 상품인지 되물어야 함)
+             * - id1 회원: 타인 주문 조회/취소 차단 테스트용
+             */
+            Long testMemberNo = memberRepository.findById("test").orElseThrow().getNo();
+            Long otherMemberNo = memberRepository.findById("id1").orElseThrow().getNo();
+            LocalDateTime now = LocalDateTime.now();
+
+            Order yesterdayOrder = saveSeedOrder(testMemberNo, seedItemMap, "부재 시 문 앞에 놓아주세요.",
+                    List.of(new SeedOrderLine("에어쿠션 데일리 러닝화", "270", 1)));
+            updateSeedOrder(yesterdayOrder, DeliveryStatus.상품준비중, null, null, now.minusDays(1));
+
+            Order shippingOrder = saveSeedOrder(testMemberNo, seedItemMap, "배송 전 미리 연락 부탁드립니다.",
+                    List.of(new SeedOrderLine("옥스포드 버튼다운 셔츠", "블루 L", 1)));
+            updateSeedOrder(shippingOrder, DeliveryStatus.배송중, "CJ대한통운", "564738291045", now.minusDays(3));
+
+            Order deliveredOrder = saveSeedOrder(testMemberNo, seedItemMap, "경비실에 맡겨주세요.",
+                    List.of(new SeedOrderLine("경량 구스다운 패딩", "블랙 M", 1),
+                            new SeedOrderLine("데일리 노트북 백팩", "블랙", 1)));
+            updateSeedOrder(deliveredOrder, DeliveryStatus.배송완료, "우체국택배", "6891234570123", now.minusDays(7));
+
+            Order todayOrder = saveSeedOrder(testMemberNo, seedItemMap, "배송 전 미리 연락 부탁드립니다.",
+                    List.of(new SeedOrderLine("와이드 데님 팬츠", "30", 1),
+                            new SeedOrderLine("울 블렌드 크루넥 니트", "브라운 M", 1)));
+            updateSeedOrder(todayOrder, DeliveryStatus.상품준비중, null, null, now);
+
+            Order otherMemberOrder = saveSeedOrder(otherMemberNo, seedItemMap, "문 앞에 놓아주세요.",
+                    List.of(new SeedOrderLine("스웨이드 첼시 부츠", "260", 1)));
+            updateSeedOrder(otherMemberOrder, DeliveryStatus.상품준비중, null, null, now.minusDays(1));
+
+            Order otherMemberShippingOrder = saveSeedOrder(otherMemberNo, seedItemMap, "",
+                    List.of(new SeedOrderLine("클래식 캔버스 로우 스니커즈", "화이트 250", 2)));
+            updateSeedOrder(otherMemberShippingOrder, DeliveryStatus.배송중, "한진택배", "421098765432", now.minusDays(2));
+        }
+
+        record SeedOrderLine(String itemName, String optionName, int count) {
+        }
+
+        /**
+         * 시드 주문 저장, 금액은 (할인가 + 옵션 추가금) * 수량으로 계산
+         */
+        private Order saveSeedOrder(Long memberNo, Map<String, Item> seedItemMap, String deliveryRequest, List<SeedOrderLine> lines) {
+            List<AddOrderItemDto> addOrderItemDtoList = new ArrayList<>();
+            BigDecimal totalProductPrice = BigDecimal.ZERO;
+            for (SeedOrderLine line : lines) {
+                Item item = seedItemMap.get(line.itemName());
+                ItemOption option = item.getItemOptions().stream()
+                        .filter(o -> o.getName().equals(line.optionName()))
+                        .findFirst()
+                        .orElseThrow();
+                BigDecimal discountedPrice = item.getOriginalPrice()
+                        .multiply(BigDecimal.valueOf(100).subtract(item.getDiscountPer()))
+                        .divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN);
+                BigDecimal totalPrice = discountedPrice.add(option.getAdditionalPrice())
+                        .multiply(BigDecimal.valueOf(line.count()));
+                String mainImage = ITEMS.stream()
+                        .filter(s -> s.name().equals(line.itemName()))
+                        .findFirst()
+                        .orElseThrow()
+                        .mainImage();
+                addOrderItemDtoList.add(new AddOrderItemDto(null, option.getNo(), item.getNo(), line.count(), discountedPrice,
+                        totalPrice, mainImage, item.getName(), option.getName()));
+                totalProductPrice = totalProductPrice.add(totalPrice);
+            }
+            int deliveryFee = totalProductPrice.compareTo(BigDecimal.valueOf(50000)) < 0 ? 3000 : 0;
+
+            Member member = memberRepository.findById(memberNo).orElseThrow();
+            return orderService.saveOrder(memberNo, new AddOrderDto(member.getName(), member.getPhoneNumber(), "12345",
+                    "인천광역시 서구", "A아파트", deliveryRequest, addOrderItemDtoList, totalProductPrice,
+                    deliveryFee, totalProductPrice.add(BigDecimal.valueOf(deliveryFee))));
+        }
+
+        /**
+         * 시드 주문의 배송 상태, 택배사, 운송장번호, 주문일 변경
+         */
+        private void updateSeedOrder(Order order, DeliveryStatus deliveryStatus, String courier, String trackingNumber,
+                                     LocalDateTime orderDate) {
+            em.flush();
+            List<OrderItem> orderItems = em.createQuery("select oi from OrderItem oi join fetch oi.delivery " +
+                            "where oi.order.no = :orderNo", OrderItem.class)
+                    .setParameter("orderNo", order.getNo())
+                    .getResultList();
+            for (OrderItem orderItem : orderItems) {
+                orderItem.getDelivery().updateDeliveryStatus(deliveryStatus);
+                orderItem.getDelivery().updateCourier(courier);
+                orderItem.getDelivery().updateTrackingNumber(trackingNumber);
+                orderItem.updateOrderItemStatus(deliveryStatus);
+            }
+            em.flush();
+
+            em.createQuery("update Order o set o.createdDate=:orderDate, o.lastModifiedDate=:orderDate where o.no = :orderNo")
+                    .setParameter("orderDate", orderDate)
+                    .setParameter("orderNo", order.getNo())
+                    .executeUpdate();
+            em.createQuery("update OrderItem oi set oi.createdDate=:orderDate where oi.order.no = :orderNo")
+                    .setParameter("orderDate", orderDate)
+                    .setParameter("orderNo", order.getNo())
+                    .executeUpdate();
         }
     }
 }

@@ -141,7 +141,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 ))
                 .from(itemImage)
                 .join(itemImage.item, item)
-                .where(itemImage.isMain.eq(true), item.itemStatus.eq(ItemStatus.판매중), item.name.contains("상품"))
+                .where(itemImage.isMain.eq(true), item.itemStatus.eq(ItemStatus.판매중))
                 .orderBy(item.viewCount.desc())
                 .limit(limit)
                 .fetch();

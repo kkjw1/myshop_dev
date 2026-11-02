@@ -1,4 +1,15 @@
 spring:
+  ai:
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY}     # Gemini Developer API (무료 키)
+        chat:
+          model: gemini-2.5-flash      # 기본값. 호출량이 많으면 gemini-2.5-flash-lite
+          temperature: 0.2             # 도구 호출 위주라 낮게
+          max-output-tokens: 1024      # 옵션 키 이름은 스타터 버전별로 다를 수 있음 → IDE 자동완성으로 확인
+  retry:
+    on-http-codes: 429, 503            # 무료 한도 초과/과부하 시 재시도
+
   mail:
     host: smtp.gmail.com          # 구글 SMTP 서버 주소
     port: 587                     # 구글 SMTP 포트 번호

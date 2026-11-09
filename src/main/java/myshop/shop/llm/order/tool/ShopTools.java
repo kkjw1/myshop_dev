@@ -43,10 +43,22 @@ public class ShopTools {
         OrderItem orderItem = orderItemRepository.findByNoAndMemberNo(orderItemNo, memberNo).orElse(null);
 
         if (orderItem == null) {
-            return new CancelDraftResultDto("해당 주문을 찾을 수 없습니다");
+            return CancelDraftResultDto.builder()
+                    .create(false)
+                    .draftId(null)
+                    .itemName(null)
+                    .cancelCount(null)
+                    .message("해당 주문을 찾을 수 없습니다.")
+                    .build();
         }
         if (orderItem.getOrderItemStatus() != OrderItemStatus.상품준비중) {
-            return new CancelDraftResultDto("현재 상태(" + orderItem.getOrderItemStatus() + ")에서는 취소할 수 없습니다. 배송 이후에는 반품을 이용해야 합니다.");
+            return CancelDraftResultDto.builder()
+                    .create(false)
+                    .draftId(null)
+                    .itemName(null)
+                    .cancelCount(null)
+                    .message("현재 상태(" + orderItem.getOrderItemStatus() + ")에서는 취소할 수 없습니다. 배송 이후에는 반품을 이용해야 합니다.")
+                    .build();
         }
 
         // 상품 취소신청서 초안 제작
@@ -54,7 +66,7 @@ public class ShopTools {
 
 
 
-        return new CancelDraftResultDto("draftId", "itemName", 1);
+        return new CancelDraftResultDto();
     }
 
 

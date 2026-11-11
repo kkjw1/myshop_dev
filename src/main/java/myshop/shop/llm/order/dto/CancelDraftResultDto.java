@@ -1,15 +1,25 @@
 package myshop.shop.llm.order.dto;
 
 import lombok.*;
+import myshop.shop.entity.cancelRequest.CancelReasonCode;
+import myshop.shop.entity.cancelRequest.CancelRequestStatus;
+import java.math.BigDecimal;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CancelDraftResultDto {
-    boolean create;
-    String draftId;
-    String itemName;
-    Integer cancelCount;
-    String message;
+    private boolean create;
+
+    private Long memberNo;
+    private Long orderItemNo;
+    private int count;
+    private String itemName;
+    private CancelReasonCode cancelReasonCode;
+    private BigDecimal price;
+    private CancelRequestStatus cancelRequestStatus;
+    private String reasonDetail;
+
+    private String message;
 }

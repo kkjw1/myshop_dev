@@ -5,12 +5,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import myshop.shop.dto.delivery.OrderDeliveryDto;
 import myshop.shop.dto.delivery.OrderItemDeliveryDto;
+import myshop.shop.entity.delivery.Delivery;
+import myshop.shop.entity.delivery.QDelivery;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static myshop.shop.entity.orderItem.QOrderItem.orderItem;
 import static myshop.shop.entity.delivery.QDelivery.delivery;
@@ -109,4 +108,13 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom{
                 .fetch();
     }
 
+
+    @Override
+    public Delivery getDelivery(Long orderItemNo) {
+        return queryFactory
+                .select(QDelivery.delivery)
+                .from(orderItem, QDelivery.delivery)
+                .where(orderItem.delivery.no.eq(orderItemNo))
+                .fetchOne();
+    }
 }

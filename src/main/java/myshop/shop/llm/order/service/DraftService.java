@@ -1,8 +1,9 @@
-package myshop.shop.llm.order.dto;
+package myshop.shop.llm.order.service;
 
 import lombok.RequiredArgsConstructor;
 import myshop.shop.entity.cancelRequest.CancelReasonCode;
 import myshop.shop.entity.orderItem.OrderItem;
+import myshop.shop.llm.order.dto.CancelDraftDto;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,15 +13,15 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class DraftStore {
+public class DraftService {
 
-    private static final String PREFIX = "assistant:draft:";
+/*    private static final String PREFIX = "assistant:draft:";
     private static final Duration TTL = Duration.ofMinutes(10);
     private static final String SEP = "|";
 
     private final StringRedisTemplate redis;
 
-    /** 초안 저장. 금액은 호출자가 넘기지 않고 OrderItem.price에서 서버가 채운다. */
+    *//** 초안 저장. 금액은 호출자가 넘기지 않고 OrderItem.price에서 서버가 채운다. *//*
     public CancelDraftDto save(Long memberNo, OrderItem orderItem, CancelReasonCode reasonCode, String reasonDetail) {
         CancelDraftDto draft = new CancelDraftDto(
                 UUID.randomUUID().toString(),
@@ -34,7 +35,7 @@ public class DraftStore {
         return draft;
     }
 
-    /** 조회와 동시에 삭제(GETDEL). 두 번째 호출, 만료, 타 회원 draftId는 모두 Optional.empty(). */
+    *//** 조회와 동시에 삭제(GETDEL). 두 번째 호출, 만료, 타 회원 draftId는 모두 Optional.empty(). *//*
     public Optional<CancelDraftDto> take(Long memberNo, String draftId) {
         String value = redis.opsForValue().getAndDelete(key(memberNo, draftId));
         return Optional.ofNullable(value).map(v -> deserialize(memberNo, draftId, v));
@@ -72,5 +73,5 @@ public class DraftStore {
 
     private String decode(String s) {
         return new String(Base64.getUrlDecoder().decode(s), StandardCharsets.UTF_8);
-    }
+    }*/
 }

@@ -3,10 +3,15 @@ package myshop.shop.llm.order.tool;
 import lombok.RequiredArgsConstructor;
 import myshop.shop.dto.order.ManageOrderDto;
 import myshop.shop.entity.cancelRequest.CancelReasonCode;
+import myshop.shop.entity.cancelRequest.CancelRequestStatus;
+import myshop.shop.entity.delivery.Delivery;
+import myshop.shop.entity.delivery.DeliveryStatus;
 import myshop.shop.entity.orderItem.OrderItem;
 import myshop.shop.entity.orderItem.OrderItemStatus;
 import myshop.shop.llm.order.dto.CancelDraftDto;
 import myshop.shop.llm.order.dto.CancelDraftResultDto;
+import myshop.shop.llm.order.dto.OrderItemStatusView;
+import myshop.shop.repository.delivery.DeliveryRepository;
 import myshop.shop.repository.orderItem.OrderItemRepository;
 import myshop.shop.service.OrderService;
 import org.springframework.ai.chat.model.ToolContext;
@@ -17,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static myshop.shop.entity.orderItem.QOrderItem.orderItem;
+
 @Component
 @Transactional
 @RequiredArgsConstructor
@@ -24,10 +31,42 @@ public class ShopTools {
 
     private final OrderService orderService;
     private final OrderItemRepository orderItemRepository;
+    private final DeliveryRepository deliveryRepository;
 
     @Tool(description = "로그인한 회원의 주문 목록을 조회한다. 각 상품의 주문상품번호, 상품명, 옵션, 주문상태가 포함된다.")
     public List<ManageOrderDto> getMyOrders(ToolContext toolContext) {
         return orderService.getManageOrder(getMemberNo(toolContext));
+    }
+
+    @Tool(description = "주문상품번호로 배송 상태, 택배사, 운송장번호, 취소 가능 여부를 조회한다.")
+    public OrderItemStatusView getOrderItemStatusView(
+            @ToolParam(description = "주문상품번호(orderItemNo)") Long orderItemNo,
+            ToolContext toolContext) {
+        Delivery delivery = deliveryRepository.getDelivery(orderItemNo);
+
+        if (delivery == null) {
+            return OrderItemStatusView.builder()
+                    .errorMessage("해당 상품의 배송정보를 찾을 수 없습니다.")
+                    .build();
+        }
+
+        if (delivery.getDeliveryStatus() != DeliveryStatus.상품준비중) {
+            return OrderItemStatusView.builder()
+                    .orderItemNo(orderItemNo)
+                    .deliveryStatus(delivery.getDeliveryStatus())
+                    .courier(delivery.getCourier())
+                    .trackingNumber(delivery.getTrackingNumber())
+                    .cancellable(false)
+                    .build();
+        } else {
+            return OrderItemStatusView.builder()
+                    .orderItemNo(orderItemNo)
+                    .deliveryStatus(delivery.getDeliveryStatus())
+                    .courier(delivery.getCourier())
+                    .trackingNumber(delivery.getTrackingNumber())
+                    .cancellable(true)
+                    .build();
+        }
     }
 
     @Tool(description = """
@@ -45,28 +84,32 @@ public class ShopTools {
         if (orderItem == null) {
             return CancelDraftResultDto.builder()
                     .create(false)
-                    .draftId(null)
-                    .itemName(null)
-                    .cancelCount(null)
                     .message("해당 주문을 찾을 수 없습니다.")
                     .build();
         }
         if (orderItem.getOrderItemStatus() != OrderItemStatus.상품준비중) {
             return CancelDraftResultDto.builder()
                     .create(false)
-                    .draftId(null)
-                    .itemName(null)
-                    .cancelCount(null)
                     .message("현재 상태(" + orderItem.getOrderItemStatus() + ")에서는 취소할 수 없습니다. 배송 이후에는 반품을 이용해야 합니다.")
                     .build();
         }
 
         // 상품 취소신청서 초안 제작
+        CancelDraftResultDto cancelDraftResultDto = CancelDraftResultDto.builder()
+                .create(true)
+                .memberNo(memberNo)
+                .orderItemNo(orderItemNo)
+                .count(orderItem.getCount())
+                .itemName(orderItem.getItemName())
+                .cancelReasonCode(cancelReasonCode)
+                .price(orderItem.getPrice())
+                .cancelRequestStatus(CancelRequestStatus.요청)
+                .reasonDetail(reasonDetail)
+                .message("취소 신청서 초안을 만들었습니다. 사용자가 확인 버튼을 눌러야 접수됩니다.")
+                .build();
+        collector(toolContext).add(cancelDraftResultDto);
 
-
-
-
-        return new CancelDraftResultDto();
+        return cancelDraftResultDto;
     }
 
 
@@ -76,8 +119,8 @@ public class ShopTools {
     }
 
     @SuppressWarnings("unchecked")
-    private List<CancelDraftDto> collector(ToolContext toolContext) {
-        return (List<CancelDraftDto>) toolContext.getContext().get("drafts");
+    private List<CancelDraftResultDto> collector(ToolContext toolContext) {
+        return (List<CancelDraftResultDto>) toolContext.getContext().get("drafts");
     }
 
 }

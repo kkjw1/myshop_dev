@@ -112,9 +112,10 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom{
     @Override
     public Delivery getDelivery(Long orderItemNo) {
         return queryFactory
-                .select(QDelivery.delivery)
-                .from(orderItem, QDelivery.delivery)
-                .where(orderItem.delivery.no.eq(orderItemNo))
+                .select(delivery)
+                .from(orderItem)
+                .join(orderItem.delivery, delivery)
+                .where(orderItem.no.eq(orderItemNo))
                 .fetchOne();
     }
 }

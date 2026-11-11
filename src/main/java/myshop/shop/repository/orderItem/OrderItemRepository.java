@@ -11,6 +11,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long>, Ord
     /**
      * 소유권 검증
      */
-    @Query("select oi from OrderItem oi where oi.no =: orderItemNo and oi.order.member.no =: memberNo")
+    @Query("select oi from OrderItem oi where oi.no = :orderItemNo and oi.order.member.no = :memberNo")
     Optional<OrderItem> findByNoAndMemberNo(@Param("orderItemNo") Long orderItemNo, @Param("memberNo") Long memberNo);
 }

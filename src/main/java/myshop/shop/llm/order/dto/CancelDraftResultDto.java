@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class CancelDraftResultDto {
     private boolean create;
 
+    private String draftId;
     private Long memberNo;
     private Long orderItemNo;
     private int count;

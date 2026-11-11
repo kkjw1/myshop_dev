@@ -108,6 +108,16 @@ public class RedisService implements MessageListener {
         return (String) valueOperations.get(key);
     }
 
+    /** 문자열 그대로 저장(JSON 따옴표 없음). 상담 에이전트 초안용. */
+    public void saveString(String key, String value, long minutes) {
+        stringRedisTemplate.opsForValue().set(key, value, Duration.ofMinutes(minutes));
+    }
+
+    /** 조회와 동시에 삭제(GETDEL). 문자열 값 전용. */
+    public String getAndDeleteData(String key) {
+        return stringRedisTemplate.opsForValue().getAndDelete(key);
+    }
+
     public void deleteData(String key) {
         redisTemplate.delete(key);
     }

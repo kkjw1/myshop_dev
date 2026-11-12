@@ -28,10 +28,20 @@ public class DraftService {
     private final RedisService redisService;
 
     /** 초안 저장. 금액/수량은 호출자가 아니라 OrderItem에서 서버가 채운다. */
-    public CancelDraftDto save(Long memberNo, OrderItem orderItem, CancelReasonCode reasonCode, String reasonDetail) {
-        CancelDraftDto draft = new CancelDraftDto(
-                UUID.randomUUID().toString(), memberNo, orderItem.getNo(), orderItem.getCount(),
-                orderItem.getItemName(), orderItem.getPrice(), reasonCode, reasonDetail);
+    /**
+     * 초안(Draft) 저장
+     */
+    public CancelDraftDto save(Long memberNo, OrderItem orderItem, CancelReasonCode cancelReasonCode, String reasonDetail) {
+        CancelDraftDto draft = CancelDraftDto.builder()
+                .id(UUID.randomUUID().toString())
+                .memberNo(memberNo)
+                .orderItemNo(orderItem.getNo())
+                .count(orderItem.getCount())
+                .itemName(orderItem.getItemName())
+                .price(orderItem.getPrice())
+                .cancelReasonCode(cancelReasonCode)
+                .reasonDetail(reasonDetail)
+                .build();
         redisService.saveString(key(memberNo, draft.getId()), serialize(draft), TTL_MINUTES);
         return draft;
     }
@@ -42,7 +52,9 @@ public class DraftService {
         return Optional.ofNullable(value).map(v -> deserialize(memberNo, draftId, v));
     }
 
-    /** 초안 폐기. */
+    /**
+     * 초안 폐기
+     */
     public void discard(Long memberNo, String draftId) {
         redisService.deleteData(key(memberNo, draftId));
     }
@@ -57,7 +69,7 @@ public class DraftService {
                 String.valueOf(d.getOrderItemNo()),
                 String.valueOf(d.getCount()),
                 d.getPrice().toPlainString(),
-                d.getReasonCode().name(),
+                d.getCancelReasonCode().name(),
                 encode(d.getItemName()),
                 encode(d.getReasonDetail()));
     }

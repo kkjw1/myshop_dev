@@ -76,6 +76,8 @@ dependencies {
 
     // Spring AI
     implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+    // 리뷰 RAG: 인메모리 벡터 저장소(SimpleVectorStore)
+    implementation 'org.springframework.ai:spring-ai-vector-store'
 }
 
 tasks.named('test') {

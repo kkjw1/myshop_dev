@@ -1,7 +1,8 @@
 # myshop_dev 
 
 Spring Boot 기반의 쇼핑몰 플랫폼입니다. 회원과 판매자를 위한 별도의 화면을 갖추고 있습니다.<br>
-상품 등록부터 장바구니, 주문, 결제 전 재고 선점, 배송, 취소/반품/환불, 리뷰, 문의까지의 기능을 구현했습니다.
+상품 등록부터 장바구니, 주문, 결제 전 재고 선점, 배송, 취소/반품/환불, 리뷰, 문의까지의 기능을 구현했습니다.<br>
+또한 Spring AI(Gemini) 기반의 주문/배송/취소 상담 AI 에이전트를 제공합니다.
 
 ## 기술 스택
 
@@ -14,6 +15,7 @@ Spring Boot 기반의 쇼핑몰 플랫폼입니다. 회원과 판매자를 위�
 | DB | H2                                             |
 | 캐시/세션 저장소 | Redis (재고 선점 및 Refresh Token 저장)               |
 | 뷰 | Thymeleaf                                      |
+| AI | Spring AI 2.0, Google Gemini(Chat), Tool Calling |
 | 외부 연동 | Solapi(문자 인증), Spring Mail(Gmail SMTP, 이메일 인증) |
 | 테스트 | JUnit 5, Spring Boot Test                      |
 
@@ -41,6 +43,8 @@ myshop.shop
 ├─ dto              # 기능별 요청/응답 DTO
 ├─ entity           # 도메인별 JPA 엔티티
 ├─ filter           # JwtFilter, LogbackFilter
+├─ llm
+│  └─ order         # 주문 상담 AI 에이전트 (config / controller / dto / service / tool)
 ├─ interceptor      # 회원 로그인 체크(JWT), 판매자 로그인 체크(session)
 ├─ repository       # 도메인별 Repository + QueryDSL + 스프링 데이터 JPA
 └─ service          # 도메인별 비즈니스 로직
@@ -88,6 +92,10 @@ myshop.shop
 - 회원 문의 등록/조회, 판매자 문의 관리(카테고리·상태 필터링)
 
 
+### 8. 주문/배송/취소 상담 AI 에이전트
+Spring AI와 Gemini 모델을 사용하여, 로그인한 회원이 채팅으로 주문·배송 상태를 묻고 취소 신청까지 할 수 있습니다.
+- **주문 취소 초안 → 사용자 확인 → 접수** 구조: AI가 직접 취소를 접수하지 않고, 초안을 Redis(`DraftService`)에 저장한 뒤 사용자가 화면에서 확인 버튼을 눌러야 접수됩니다.
+
 ## 환경 설정 (`application.yml`)
 로컬 실행 시 아래 환경 변수(또는 `.env` 파일)가 필요합니다.
 
@@ -96,6 +104,7 @@ myshop.shop
 - `FILE_STORE_PATH`, `FILE_EXTERNAL_STORE_PATH` — 파일 저장 경로
 - `JWT_SECRET` — JWT 서명 키
 - `REDIS_PASSWORD` — Redis 비밀번호
+- `GEMINI_API_KEY` — Gemini API 키 (AI 상담 에이전트)
 
 또한 로컬에 H2(TCP 모드)와 Redis가 구동 중이어야 합니다.<br>
 TTL을 위해 redis.conf에서 notify-keyspace-events "Ex"를 사용해야 합니다.

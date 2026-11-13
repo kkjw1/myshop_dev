@@ -1,5 +1,10 @@
 package myshop.shop.dto.member;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +13,9 @@ import lombok.Data;
 import myshop.shop.entity.member.Gender;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignUpMemberDto {
     @NotBlank(message = "아이디가 공백입니다.")
     private String id;
@@ -28,21 +36,7 @@ public class SignUpMemberDto {
     @NotBlank(message = "통신사가 공백입니다.")
     private String telecom;
 
-
     @NotBlank(message = "휴대전화번호가 공백입니다.")
     private String phoneNumber;
 
-
-    public SignUpMemberDto() {
-    }
-
-    public SignUpMemberDto(String id, String password, String email, String name, String telecom, Gender gender, String phoneNumber) {
-        this.id = id;
-        this.password = password;
-        this.email = email;
-        this.name = name;
-        this.telecom = telecom;
-        this.gender = gender;
-        this.phoneNumber = phoneNumber;
-    }
 }

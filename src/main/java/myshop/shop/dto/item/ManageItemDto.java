@@ -1,5 +1,9 @@
 package myshop.shop.dto.item;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,6 +15,9 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 @ToString(of = {"itemNo", "mainImagePath", "name", "price", "totalStock", "itemStatus", "createdDate"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ManageItemDto {
     private Long itemNo;
     private String mainImagePath;
@@ -20,35 +27,4 @@ public class ManageItemDto {
     private ItemStatus itemStatus;
     private LocalDateTime createdDate;
 
-
-    public ManageItemDto() {
-    }
-
-    public ManageItemDto(Item item) {
-        this.itemNo = item.getNo();
-        this.name = item.getName();
-        this.price = item.getOriginalPrice();
-        this.totalStock = item.getTotalStock();
-        this.itemStatus = item.getItemStatus();
-        this.createdDate = item.getCreatedDate();
-    }
-
-    public ManageItemDto(Long itemNo, String mainImagePath, String name, int price, int totalStock, ItemStatus itemStatus, LocalDateTime createdDate) {
-        this.itemNo = itemNo;
-        this.mainImagePath = mainImagePath;
-        this.name = name;
-        this.price = BigDecimal.valueOf(price);
-        this.totalStock = totalStock;
-        this.itemStatus = itemStatus;
-        this.createdDate = createdDate;
-    }
-    public ManageItemDto(Long itemNo, String mainImagePath, String name, BigDecimal price, int totalStock, ItemStatus itemStatus, LocalDateTime createdDate) {
-        this.itemNo = itemNo;
-        this.mainImagePath = mainImagePath;
-        this.name = name;
-        this.price = price;
-        this.totalStock = totalStock;
-        this.itemStatus = itemStatus;
-        this.createdDate = createdDate;
-    }
 }

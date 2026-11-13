@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@lombok.Builder
 @AllArgsConstructor
 public class ChatResponseDto {
     private String reply;

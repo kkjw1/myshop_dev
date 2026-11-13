@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import java.math.BigDecimal;
 
 
 @SpringBootTest
@@ -71,25 +72,68 @@ class CartServiceTest {
          * 상품 저장
          */
         Long sellerNo = sellerRepository.findById("test").orElse(null).getNo();
-        itemService.saveItemForTest(new AddItemDto(sellerNo, "상품테스트1", ItemCategory.상의, 30000, 40, 10,
-                List.of(
-                        new AddItemOptionDto("검정색", 0, 10),
-                        new AddItemOptionDto("나이키", 3000, 10),
-                        new AddItemOptionDto("흰색", 1000, 10),
-                        new AddItemOptionDto("로고", 3000, 10)
-                ), null, "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.png", null,
-                List.of(
+        itemService.saveItemForTest(AddItemDto.builder()
+                .sellerNo(sellerNo)
+                .name("상품테스트1")
+                .itemCategory(ItemCategory.상의)
+                .price(BigDecimal.valueOf(30000))
+                .totalStock(40)
+                .discountPer(BigDecimal.valueOf(10))
+                .addItemOptionDtoList(List.of(
+                        AddItemOptionDto.builder()
+                                .name("검정색")
+                                .additionalPrice(BigDecimal.valueOf(0))
+                                .optionStock(10)
+                                .build(),
+                        AddItemOptionDto.builder()
+                                .name("나이키")
+                                .additionalPrice(BigDecimal.valueOf(3000))
+                                .optionStock(10)
+                                .build(),
+                        AddItemOptionDto.builder()
+                                .name("흰색")
+                                .additionalPrice(BigDecimal.valueOf(1000))
+                                .optionStock(10)
+                                .build(),
+                        AddItemOptionDto.builder()
+                                .name("로고")
+                                .additionalPrice(BigDecimal.valueOf(3000))
+                                .optionStock(10)
+                                .build()
+                ))
+                .mainImage(null)
+                .mainImagePath("/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.png")
+                .subImages(null)
+                .subImagesPath(List.of(
                         "/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png",
                         "/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png",
                         "/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png"
-                ), "상품옵션있음, 추가이미지있음", ItemStatus.판매중, true, 10L));
+                ))
+                .content("상품옵션있음, 추가이미지있음")
+                .itemStatus(ItemStatus.판매중)
+                .useOptions(true)
+                .viewCount(10L)
+                .build());
 
 /*        List<AddItemOptionDto> emptyAddItemOptionDtoList = new ArrayList<>();
-        itemService.saveItem(new AddItemDto(sellerNo, "상품테스트3(옵션X)", ItemCategory.아우터, 250000, 20, 0,
-                emptyAddItemOptionDtoList, null, "/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png", null,
-                List.of(
+        itemService.saveItem(AddItemDto.builder()
+                .sellerNo(sellerNo)
+                .name("상품테스트3(옵션X)")
+                .itemCategory(ItemCategory.아우터)
+                .price(BigDecimal.valueOf(250000))
+                .totalStock(20)
+                .discountPer(BigDecimal.valueOf(0))
+                .addItemOptionDtoList(emptyAddItemOptionDtoList)
+                .mainImage(null)
+                .mainImagePath("/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png")
+                .subImages(null)
+                .subImagesPath(List.of(
                         "/shop_image/b3ba7699-d546-4075-84a9-9b6888049a0c.png"
-                ), "상품옵션없음, 추가이미지있음", ItemStatus.판매중, true));*/
+                ))
+                .content("상품옵션없음, 추가이미지있음")
+                .itemStatus(ItemStatus.판매중)
+                .useOptions(true)
+                .build());*/
 
         em.flush();
         em.clear();
@@ -100,7 +144,12 @@ class CartServiceTest {
     @DisplayName("장바구니 처음 저장")
     public void saveCartTest() throws Exception {
         //given
-        SaveCartDto saveCartDto = new SaveCartDto(1L, 1L, 1L, 5);
+        SaveCartDto saveCartDto = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(1L)
+                .count(5)
+                .build();
 
         //when
         cartService.saveCart(saveCartDto);
@@ -116,13 +165,23 @@ class CartServiceTest {
     @DisplayName("같은 물품 장바구니에 저장")
     public void saveCartTest2() throws Exception {
         //given
-        SaveCartDto saveCartDto = new SaveCartDto(1L, 1L, 1L,5);
+        SaveCartDto saveCartDto = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(1L)
+                .count(5)
+                .build();
         cartService.saveCart(saveCartDto);
         em.flush();
         em.clear();
 
         //when
-        SaveCartDto saveCartDto2 = new SaveCartDto(1L, 1L, 1L, 4);
+        SaveCartDto saveCartDto2 = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(1L)
+                .count(4)
+                .build();
         cartService.saveCart(saveCartDto2);
 
         //then
@@ -134,13 +193,23 @@ class CartServiceTest {
     @DisplayName("다른 물품 장바구니에 저장")
     public void saveCartTest3() throws Exception {
         //given
-        SaveCartDto saveCartDto = new SaveCartDto(1L, 1L, 1L, 5);
+        SaveCartDto saveCartDto = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(1L)
+                .count(5)
+                .build();
         cartService.saveCart(saveCartDto);
         em.flush();
         em.clear();
 
         //when
-        SaveCartDto saveCartDto2 = new SaveCartDto(1L, 1L, 2L, 4);
+        SaveCartDto saveCartDto2 = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(2L)
+                .count(4)
+                .build();
         cartService.saveCart(saveCartDto2);
 
         //then
@@ -156,11 +225,26 @@ class CartServiceTest {
     @Test
     public void findAllCartTest() throws Exception {
         //given
-        SaveCartDto saveCartDto = new SaveCartDto(1L, 1L, 1L, 5);
+        SaveCartDto saveCartDto = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(1L)
+                .count(5)
+                .build();
         cartService.saveCart(saveCartDto);
-        SaveCartDto saveCartDto2 = new SaveCartDto(1L, 1L, 2L, 4);
+        SaveCartDto saveCartDto2 = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(2L)
+                .count(4)
+                .build();
         cartService.saveCart(saveCartDto2);
-        SaveCartDto saveCartDto3 = new SaveCartDto(1L, 1L, 1L, 2);
+        SaveCartDto saveCartDto3 = SaveCartDto.builder()
+                .itemNo(1L)
+                .memberNo(1L)
+                .itemOptionNo(1L)
+                .count(2)
+                .build();
         cartService.saveCart(saveCartDto3);
         em.flush();
         em.clear();

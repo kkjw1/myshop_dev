@@ -1,5 +1,9 @@
 package myshop.shop.dto.delivery;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,15 +14,12 @@ import java.util.List;
 
 @Getter @Setter
 @ToString(of = {"orderNoList", "orderStatus"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BatchUpdateOrderDeliveryDto {
+    @Builder.Default
     private List<Long> orderNoList = new ArrayList<>();
     private OrderStatus orderStatus;
 
-    public BatchUpdateOrderDeliveryDto() {
-    }
-
-    public BatchUpdateOrderDeliveryDto(List<Long> orderNoList, OrderStatus orderStatus) {
-        this.orderNoList = orderNoList;
-        this.orderStatus = orderStatus;
-    }
 }

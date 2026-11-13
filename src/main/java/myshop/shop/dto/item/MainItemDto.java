@@ -1,5 +1,9 @@
 package myshop.shop.dto.item;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +14,9 @@ import java.math.BigDecimal;
 
 @Getter @Setter
 @ToString(of = {"mainImagePath", "name", "price", "discountPer", "viewCount", "reviewScore", "reviewCount"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MainItemDto {
     private Long itemNo;
     private String mainImagePath;
@@ -21,23 +28,4 @@ public class MainItemDto {
     private Double reviewScore;
     private Long reviewCount;
 
-    public MainItemDto() {
-    }
-
-    public MainItemDto(Long itemNo, String mainImagePath, String name, int price, int discountPer, Long viewCount) {
-        this.itemNo = itemNo;
-        this.mainImagePath = mainImagePath;
-        this.name = name;
-        this.price = BigDecimal.valueOf(price);
-        this.discountPer = BigDecimal.valueOf(discountPer);
-        this.viewCount = viewCount;
-    }
-    public MainItemDto(Long itemNo, String mainImagePath, String name, BigDecimal price, BigDecimal discountPer, Long viewCount) {
-        this.itemNo = itemNo;
-        this.mainImagePath = mainImagePath;
-        this.name = name;
-        this.price = price;
-        this.discountPer = discountPer;
-        this.viewCount = viewCount;
-    }
 }

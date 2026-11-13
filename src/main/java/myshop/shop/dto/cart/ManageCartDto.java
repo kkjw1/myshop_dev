@@ -1,5 +1,9 @@
 package myshop.shop.dto.cart;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,6 +12,9 @@ import java.math.BigDecimal;
 
 @Getter @Setter
 @ToString(of = {"cartNo", "itemNo", "itemOptionNo", "name", "imagePath", "count", "totalStock", "optionStock", "originalPrice", "optionPrice", "discountPer", "optionName", "price"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ManageCartDto {
     private Long cartNo;            // Cart
     private Long itemNo;            // Item
@@ -24,33 +31,4 @@ public class ManageCartDto {
 
     private BigDecimal price;       // 계산된 개당가격(할인된 가격 + 옵션 추가금액)
 
-    public ManageCartDto() {
-    }
-
-    public ManageCartDto(Long cartNo, Long itemNo, Long itemOptionNo, String name, String imagePath, int count, int totalStock, int optionStock, int originalPrice, int optionPrice, String optionName) {
-        this.cartNo = cartNo;
-        this.itemNo = itemNo;
-        this.itemOptionNo = itemOptionNo;
-        this.name = name;
-        this.imagePath = imagePath;
-        this.count = count;
-        this.totalStock = totalStock;
-        this.optionStock = optionStock;
-        this.originalPrice = BigDecimal.valueOf(originalPrice);
-        this.optionPrice = BigDecimal.valueOf(optionPrice);
-        this.optionName = optionName;
-    }
-    public ManageCartDto(Long cartNo, Long itemNo, Long itemOptionNo, String name, String imagePath, int count, int totalStock, int optionStock, BigDecimal originalPrice, BigDecimal optionPrice, String optionName) {
-        this.cartNo = cartNo;
-        this.itemNo = itemNo;
-        this.itemOptionNo = itemOptionNo;
-        this.name = name;
-        this.imagePath = imagePath;
-        this.count = count;
-        this.totalStock = totalStock;
-        this.optionStock = optionStock;
-        this.originalPrice = originalPrice;
-        this.optionPrice = optionPrice;
-        this.optionName = optionName;
-    }
 }

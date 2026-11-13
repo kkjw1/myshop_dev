@@ -61,7 +61,11 @@ public class SellerController {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute(LOGIN_SELLER, new LoginCheckSellerDto(login));
+        session.setAttribute(LOGIN_SELLER, LoginCheckSellerDto.builder()
+                .no(login.getNo())
+                .id(login.getId())
+                .name(login.getName())
+                .build());
 
         String target = (redirectURL != null && !redirectURL.isBlank()) ? redirectURL : "/";
         log.info("redirectURL={} target={}", redirectURL, target);

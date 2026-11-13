@@ -127,8 +127,10 @@ public class JwtService {
         Claims claims = parseClaims(token);
         Number noNumber = claims.get("no", Number.class);
         Long no = (noNumber != null) ? noNumber.longValue() : null;
-        return new LoginCheckMemberDto(no,
-                claims.get("id", String.class),
-                claims.get("name", String.class));
+        return LoginCheckMemberDto.builder()
+                .no(no)
+                .id(claims.get("id", String.class))
+                .name(claims.get("name", String.class))
+                .build();
     }
 }

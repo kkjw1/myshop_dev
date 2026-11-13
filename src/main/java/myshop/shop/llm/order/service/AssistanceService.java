@@ -33,7 +33,10 @@ public class AssistanceService {
     /** 상담 메시지 처리. 회원번호는 인증된 값만 사용한다. */
     public ChatResponseDto chat(Long memberNo, String message) {
         if (message == null || message.isBlank()) {
-            return new ChatResponseDto("메시지를 입력해 주세요.", List.of());
+            return ChatResponseDto.builder()
+                    .reply("메시지를 입력해 주세요.")
+                    .drafts(List.of())
+                    .build();
         }
         if (message.length() > MAX_MESSAGE_LENGTH) {
             message = message.substring(0, MAX_MESSAGE_LENGTH);
@@ -47,10 +50,16 @@ public class AssistanceService {
                     .toolContext(Map.of("memberNo", memberNo, "drafts", drafts))
                     .call()
                     .content();
-            return new ChatResponseDto(reply, drafts);
+            return ChatResponseDto.builder()
+                    .reply(reply)
+                    .drafts(drafts)
+                    .build();
         } catch (Exception e) {
             log.error("상담 에이전트 호출 실패, memberNo={}", memberNo, e);
-            return new ChatResponseDto("죄송합니다. 지금은 상담을 처리할 수 없습니다. 잠시 후 다시 시도하거나 1:1 문의를 이용해 주세요.", List.of());
+            return ChatResponseDto.builder()
+                    .reply("죄송합니다. 지금은 상담을 처리할 수 없습니다. 잠시 후 다시 시도하거나 1:1 문의를 이용해 주세요.")
+                    .drafts(List.of())
+                    .build();
         }
     }
 

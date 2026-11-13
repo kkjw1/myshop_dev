@@ -98,7 +98,15 @@ public class AddressController {
             return "redirect:/login?redirectURL=" + request.getRequestURI();
         }*/
         Address address = addressRepository.findByNo(addressNo).orElse(null);
-        UpdateAddressDto updateAddressDto = new UpdateAddressDto(address);
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+            .addressNo(address.getNo())
+            .addressName(address.getAddressName())
+            .recipientName(address.getRecipientName())
+            .phoneNumber(address.getPhoneNumber())
+            .postcode(address.getPostcode())
+            .roadAddress(address.getRoadAddress())
+            .detailAddress(address.getDetailAddress())
+            .build();
 
         model.addAttribute("updateAddressDto", updateAddressDto);
         return "member/mypage/address_manage_update";

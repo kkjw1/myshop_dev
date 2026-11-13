@@ -1,6 +1,10 @@
 package myshop.shop.controller.memberWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -147,6 +151,9 @@ public class OrderController {
         return "member/mypage/direct_order";
     }
     @Getter @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @ToString(of = {"itemNo", "memberNo", "itemOptionNo", "itemImageNo", "count"})
     public static class CheckDirectOrderDto {
         private Long itemNo;
@@ -154,17 +161,6 @@ public class OrderController {
         private Long itemOptionNo;      // null or Data
         private Long itemImageNo;
         private int count;
-
-        public CheckDirectOrderDto() {
-        }
-
-        public CheckDirectOrderDto(Long itemNo, Long memberNo, Long itemOptionNo, Long itemImageNo, int count) {
-            this.itemNo = itemNo;
-            this.memberNo = memberNo;
-            this.itemOptionNo = itemOptionNo;
-            this.itemImageNo = itemImageNo;
-            this.count = count;
-        }
     }
 
     /**

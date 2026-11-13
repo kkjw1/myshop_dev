@@ -76,8 +76,16 @@ public class DraftService {
 
     private CancelDraftDto deserialize(Long memberNo, String draftId, String v) {
         String[] p = v.split("\\" + SEP, -1);
-        return new CancelDraftDto(draftId, memberNo, Long.valueOf(p[0]), Integer.parseInt(p[1]),
-                decode(p[4]), new BigDecimal(p[2]), CancelReasonCode.valueOf(p[3]), decode(p[5]));
+        return CancelDraftDto.builder()
+                .id(draftId)
+                .memberNo(memberNo)
+                .orderItemNo(Long.valueOf(p[0]))
+                .count(Integer.parseInt(p[1]))
+                .itemName(decode(p[4]))
+                .price(new BigDecimal(p[2]))
+                .cancelReasonCode(CancelReasonCode.valueOf(p[3]))
+                .reasonDetail(decode(p[5]))
+                .build();
     }
 
     private String encode(String s) {

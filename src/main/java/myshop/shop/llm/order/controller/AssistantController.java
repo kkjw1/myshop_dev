@@ -44,7 +44,10 @@ public class AssistantController {
     }
 
     private ResponseEntity<?> unauthorized() {
-        return ResponseEntity.status(401).body(new ChatResponseDto("로그인 후 이용해 주세요.", List.of()));
+        return ResponseEntity.status(401).body(ChatResponseDto.builder()
+                .reply("로그인 후 이용해 주세요.")
+                .drafts(List.of())
+                .build());
     }
 
     /** JwtFilter가 SecurityContext에 넣어 둔 인증 회원의 번호. 없으면 null. */

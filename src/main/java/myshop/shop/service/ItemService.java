@@ -141,7 +141,14 @@ public class ItemService {
         Seller sellerProxy = sellerRepository.getReferenceById(sellerNo);
         List<Item> itemList = itemRepository.findBySeller(sellerProxy);
         return itemList.stream()
-                .map(ManageItemDto::new)
+                .map(item -> ManageItemDto.builder()
+                        .itemNo(item.getNo())
+                        .name(item.getName())
+                        .price(item.getOriginalPrice())
+                        .totalStock(item.getTotalStock())
+                        .itemStatus(item.getItemStatus())
+                        .createdDate(item.getCreatedDate())
+                        .build())
                 .collect(Collectors.toList());
 
     }
@@ -164,7 +171,21 @@ public class ItemService {
         Item item = itemRepository.findById(itemNo).orElse(null);
         List<ItemOption> itemOptionList = itemOptionRepository.findByItem(item);
 
-        return new ModifyItemDto(item, itemOptionList);
+        return ModifyItemDto.builder()
+            .name(item.getName())
+            .price(item.getOriginalPrice())
+            .totalStock(item.getTotalStock())
+            .itemStatus(item.getItemStatus())
+            .discountPer(item.getDiscountPer())
+            .modifyItemOptionDtoList(itemOptionList.stream()
+                    .map(itemOption -> ModifyItemOptionDto.builder()
+                            .name(itemOption.getName())
+                            .additionalPrice(itemOption.getAdditionalPrice())
+                            .optionStock(itemOption.getOptionStock())
+                            .build())
+                    .toList())
+            .content(item.getContent())
+            .build();
     }
 
 

@@ -1,5 +1,9 @@
 package myshop.shop.dto.order;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,6 +12,9 @@ import java.math.BigDecimal;
 
 @Getter @Setter
 @ToString(of = {"cartNo", "optionNo", "itemNo", "count", "discountedPrice", "totalPrice", "imageUrl", "itemName", "optionName"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddOrderItemDto {
     private Long cartNo;
     private Long optionNo;
@@ -19,18 +26,4 @@ public class AddOrderItemDto {
     private String itemName;
     private String optionName;
 
-    public AddOrderItemDto() {
-    }
-
-    public AddOrderItemDto(Long cartNo, Long optionNo, Long itemNo, int count, BigDecimal discountedPrice, BigDecimal totalPrice, String imageUrl, String itemName, String optionName) {
-        this.cartNo = cartNo;
-        this.optionNo = optionNo;
-        this.itemNo = itemNo;
-        this.count = count;
-        this.discountedPrice = discountedPrice;
-        this.totalPrice = totalPrice;
-        this.imageUrl = imageUrl;
-        this.itemName = itemName;
-        this.optionName = optionName;
-    }
 }

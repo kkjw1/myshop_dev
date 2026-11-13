@@ -53,7 +53,16 @@ public class AddressService {
     public List<ManageAddressDto> getAddressesByMemberNo(Long memberNo) {
         List<Address> findAddresses = addressRepository.findByMemberNoOrderByIsMainDesc(memberNo);
         return findAddresses.stream()
-                .map(ManageAddressDto::new)
+                .map(address -> ManageAddressDto.builder()
+                    .addressNo(address.getNo())
+                    .addressName(address.getAddressName())
+                    .recipientName(address.getRecipientName())
+                    .phoneNumber(address.getPhoneNumber())
+                    .postcode(address.getPostcode())
+                    .roadAddress(address.getRoadAddress())
+                    .detailAddress(address.getDetailAddress())
+                    .isMain(address.getIsMain())
+                    .build())
                 .collect(toList());
     }
 
@@ -66,7 +75,16 @@ public class AddressService {
         if (address == null) {
             return null;
         }
-        return new ManageAddressDto(address);
+        return ManageAddressDto.builder()
+            .addressNo(address.getNo())
+            .addressName(address.getAddressName())
+            .recipientName(address.getRecipientName())
+            .phoneNumber(address.getPhoneNumber())
+            .postcode(address.getPostcode())
+            .roadAddress(address.getRoadAddress())
+            .detailAddress(address.getDetailAddress())
+            .isMain(address.getIsMain())
+            .build();
     }
 
 

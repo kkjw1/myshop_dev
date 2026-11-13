@@ -29,7 +29,15 @@ class MemberServiceTest {
 
     @Test
     public void signUpTest() {
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email", "name", "telecom", Gender.MAN, "phoneNumber");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email")
+                .name("name")
+                .telecom("telecom")
+                .gender(Gender.MAN)
+                .phoneNumber("phoneNumber")
+                .build();
         Member member = memberService.signUp(signUpMemberDto);
 
         assertThat(member.getId()).isEqualTo("id");
@@ -39,11 +47,22 @@ class MemberServiceTest {
     @Commit
     public void loginTest() throws Exception {
         //given
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email", "name", "telecom", Gender.MAN, "phoneNumber");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email")
+                .name("name")
+                .telecom("telecom")
+                .gender(Gender.MAN)
+                .phoneNumber("phoneNumber")
+                .build();
         memberService.signUp(signUpMemberDto);
 
         //when
-        Member login = memberService.login(new LoginMemberDto("id", "password"));
+        Member login = memberService.login(LoginMemberDto.builder()
+                .id("id")
+                .password("password")
+                .build());
 
         //then
         assertThat(login.getId()).isEqualTo("id");
@@ -67,7 +86,15 @@ class MemberServiceTest {
     @Test
     public void checkIdTest() throws Exception {
         //given
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email", "name", "010-1111-2222", Gender.MAN, "phoneNumber");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email")
+                .name("name")
+                .telecom("010-1111-2222")
+                .gender(Gender.MAN)
+                .phoneNumber("phoneNumber")
+                .build();
         memberService.signUp(signUpMemberDto);
 
         boolean result = memberService.checkId("id");
@@ -80,7 +107,15 @@ class MemberServiceTest {
     @Test
     public void checkPhoneNumberTest() throws Exception {
         //given
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email@test.com", "name", "SKT", Gender.MAN, "010-1111-2222");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email@test.com")
+                .name("name")
+                .telecom("SKT")
+                .gender(Gender.MAN)
+                .phoneNumber("010-1111-2222")
+                .build();
         memberService.signUp(signUpMemberDto);
 
         //when
@@ -97,9 +132,25 @@ class MemberServiceTest {
     @Commit
     public void memberModifyTest() throws Exception {
         //given
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email", "name", "telecom", Gender.MAN, "phoneNumber");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email")
+                .name("name")
+                .telecom("telecom")
+                .gender(Gender.MAN)
+                .phoneNumber("phoneNumber")
+                .build();
         memberService.signUp(signUpMemberDto);
-        memberService.memberModify(new UpdateMemberDto("id", "name", "email_change", "password", "telecom_change", "phoneNumber", Gender.MAN));
+        memberService.memberModify(UpdateMemberDto.builder()
+                .id("id")
+                .name("name")
+                .email("email_change")
+                .password("password")
+                .telecom("telecom_change")
+                .phoneNumber("phoneNumber")
+                .gender(Gender.MAN)
+                .build());
         em.flush();
         em.clear();
 

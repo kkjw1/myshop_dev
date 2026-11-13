@@ -12,7 +12,6 @@ import myshop.shop.entity.review.Review;
 import myshop.shop.repository.Item.ItemRepository;
 import myshop.shop.repository.orderItem.OrderItemRepository;
 import myshop.shop.repository.review.ReviewRepository;
-import myshop.shop.llm.review.service.ReviewIndexListener.ReviewSavedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,8 +41,6 @@ public class ReviewService {
                 saveReviewDto.getCount(),
                 saveReviewDto.getScore(),
                 saveReviewDto.getContent()));
-        // 커밋 후 RAG 벡터 저장소에 색인 (ReviewIndexListener)
-        eventPublisher.publishEvent(new ReviewSavedEvent(saved.getNo()));
 
         OrderItem orderItem = orderItemRepository.findById(saveReviewDto.getOrderItemNo()).orElse(null);
         if (orderItem != null) {

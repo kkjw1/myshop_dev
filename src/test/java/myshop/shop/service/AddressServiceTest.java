@@ -34,7 +34,15 @@ class AddressServiceTest {
 
     @BeforeEach
     public void beforeInit() {
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email", "name", "telecom", Gender.MAN, "phoneNumber");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email")
+                .name("name")
+                .telecom("telecom")
+                .gender(Gender.MAN)
+                .phoneNumber("phoneNumber")
+                .build();
         memberService.signUp(signUpMemberDto);
     }
 
@@ -43,10 +51,24 @@ class AddressServiceTest {
     public void saveAddressTest() throws Exception {
         Member member = memberRepository.findById("id").orElse(null);
         Long no = member.getNo();
-        AddAddressDto addAddressDto = new AddAddressDto("addressName", "recipientName", "phoneNumber",
-                "postcode", "roadAddress", "detailAddress", true);
-        AddAddressDto addAddressDto2 = new AddAddressDto("addressName2", "recipientName2", "phoneNumber2",
-                "postcode2", "roadAddress2", "detailAddress2", false);
+        AddAddressDto addAddressDto = AddAddressDto.builder()
+                .addressName("addressName")
+                .recipientName("recipientName")
+                .phoneNumber("phoneNumber")
+                .postcode("postcode")
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .isMain(true)
+                .build();
+        AddAddressDto addAddressDto2 = AddAddressDto.builder()
+                .addressName("addressName2")
+                .recipientName("recipientName2")
+                .phoneNumber("phoneNumber2")
+                .postcode("postcode2")
+                .roadAddress("roadAddress2")
+                .detailAddress("detailAddress2")
+                .isMain(false)
+                .build();
 
 
         addressService.saveAddress(no, addAddressDto);
@@ -65,10 +87,24 @@ class AddressServiceTest {
         //given
         Member member = memberRepository.findById("id").orElse(null);
         Long no = member.getNo();
-        AddAddressDto addAddressDto = new AddAddressDto("addressName", "recipientName", "phoneNumber",
-                "postcode", "roadAddress", "detailAddress", true);
-        AddAddressDto addAddressDto2 = new AddAddressDto("addressName2", "recipientName2", "phoneNumber2",
-                "postcode2", "roadAddress2", "detailAddress2", false);
+        AddAddressDto addAddressDto = AddAddressDto.builder()
+                .addressName("addressName")
+                .recipientName("recipientName")
+                .phoneNumber("phoneNumber")
+                .postcode("postcode")
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .isMain(true)
+                .build();
+        AddAddressDto addAddressDto2 = AddAddressDto.builder()
+                .addressName("addressName2")
+                .recipientName("recipientName2")
+                .phoneNumber("phoneNumber2")
+                .postcode("postcode2")
+                .roadAddress("roadAddress2")
+                .detailAddress("detailAddress2")
+                .isMain(false)
+                .build();
         addressService.saveAddress(no, addAddressDto);
         addressService.saveAddress(no, addAddressDto2);
 
@@ -90,10 +126,24 @@ class AddressServiceTest {
         //given
         Member member = memberRepository.findById("id").orElse(null);
         Long no = member.getNo();
-        AddAddressDto addAddressDto = new AddAddressDto("addressName", "recipientName", "phoneNumber",
-                "postcode", "roadAddress", "detailAddress", true);
-        AddAddressDto addAddressDto2 = new AddAddressDto("addressName2", "recipientName2", "phoneNumber2",
-                "postcode2", "roadAddress2", "detailAddress2", false);
+        AddAddressDto addAddressDto = AddAddressDto.builder()
+                .addressName("addressName")
+                .recipientName("recipientName")
+                .phoneNumber("phoneNumber")
+                .postcode("postcode")
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .isMain(true)
+                .build();
+        AddAddressDto addAddressDto2 = AddAddressDto.builder()
+                .addressName("addressName2")
+                .recipientName("recipientName2")
+                .phoneNumber("phoneNumber2")
+                .postcode("postcode2")
+                .roadAddress("roadAddress2")
+                .detailAddress("detailAddress2")
+                .isMain(false)
+                .build();
         addressService.saveAddress(no, addAddressDto);
         addressService.saveAddress(no, addAddressDto2);
 
@@ -113,10 +163,24 @@ class AddressServiceTest {
         //given
         Member member = memberRepository.findById("id").orElse(null);
         Long no = member.getNo();
-        AddAddressDto addAddressDto = new AddAddressDto("addressName", "recipientName", "phoneNumber",
-                "postcode", "roadAddress", "detailAddress", false);
-        AddAddressDto addAddressDto2 = new AddAddressDto("addressName2", "recipientName2", "phoneNumber2",
-                "postcode2", "roadAddress2", "detailAddress2", false);
+        AddAddressDto addAddressDto = AddAddressDto.builder()
+                .addressName("addressName")
+                .recipientName("recipientName")
+                .phoneNumber("phoneNumber")
+                .postcode("postcode")
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .isMain(false)
+                .build();
+        AddAddressDto addAddressDto2 = AddAddressDto.builder()
+                .addressName("addressName2")
+                .recipientName("recipientName2")
+                .phoneNumber("phoneNumber2")
+                .postcode("postcode2")
+                .roadAddress("roadAddress2")
+                .detailAddress("detailAddress2")
+                .isMain(false)
+                .build();
         addressService.saveAddress(no, addAddressDto);
         addressService.saveAddress(no, addAddressDto2);
 
@@ -135,10 +199,24 @@ class AddressServiceTest {
         //given
         Member member = memberRepository.findById("id").orElse(null);
         Long no = member.getNo();
-        AddAddressDto addAddressDto = new AddAddressDto("addressName", "recipientName", "phoneNumber",
-                "postcode", "roadAddress", "detailAddress", true);
-        AddAddressDto addAddressDto2 = new AddAddressDto("addressName2", "recipientName2", "phoneNumber2",
-                "postcode2", "roadAddress2", "detailAddress2", false);
+        AddAddressDto addAddressDto = AddAddressDto.builder()
+                .addressName("addressName")
+                .recipientName("recipientName")
+                .phoneNumber("phoneNumber")
+                .postcode("postcode")
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .isMain(true)
+                .build();
+        AddAddressDto addAddressDto2 = AddAddressDto.builder()
+                .addressName("addressName2")
+                .recipientName("recipientName2")
+                .phoneNumber("phoneNumber2")
+                .postcode("postcode2")
+                .roadAddress("roadAddress2")
+                .detailAddress("detailAddress2")
+                .isMain(false)
+                .build();
         addressService.saveAddress(no, addAddressDto);
         addressService.saveAddress(no, addAddressDto2);
 
@@ -158,10 +236,24 @@ class AddressServiceTest {
         //given
         Member member = memberRepository.findById("id").orElse(null);
         Long no = member.getNo();
-        AddAddressDto addAddressDto = new AddAddressDto("addressName", "recipientName", "phoneNumber",
-                "postcode", "roadAddress", "detailAddress", true);
-        AddAddressDto addAddressDto2 = new AddAddressDto("addressName2", "recipientName2", "phoneNumber2",
-                "postcode2", "roadAddress2", "detailAddress2", false);
+        AddAddressDto addAddressDto = AddAddressDto.builder()
+                .addressName("addressName")
+                .recipientName("recipientName")
+                .phoneNumber("phoneNumber")
+                .postcode("postcode")
+                .roadAddress("roadAddress")
+                .detailAddress("detailAddress")
+                .isMain(true)
+                .build();
+        AddAddressDto addAddressDto2 = AddAddressDto.builder()
+                .addressName("addressName2")
+                .recipientName("recipientName2")
+                .phoneNumber("phoneNumber2")
+                .postcode("postcode2")
+                .roadAddress("roadAddress2")
+                .detailAddress("detailAddress2")
+                .isMain(false)
+                .build();
         addressService.saveAddress(no, addAddressDto);
         addressService.saveAddress(no, addAddressDto2);
 

@@ -130,61 +130,178 @@ public class InitDB {
              * 상품 저장
              */
             Long sellerNo = sellerRepository.findById("test").orElse(null).getNo();
-            itemService.saveItem(new AddItemDto(sellerNo, "상품테스트1", ItemCategory.상의, 27000, 48, 10,
-                    List.of(
-                            new AddItemOptionDto("검정색", 0, 4),
-                            new AddItemOptionDto("나이키", 3000, 9),
-                            new AddItemOptionDto("흰색", 1000, 15),
-                            new AddItemOptionDto("로고", 3000, 20)
-                    ), null, "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", null,
-                    List.of(
+            itemService.saveItem(AddItemDto.builder()
+                    .sellerNo(sellerNo)
+                    .name("상품테스트1")
+                    .itemCategory(ItemCategory.상의)
+                    .price(BigDecimal.valueOf(27000))
+                    .totalStock(48)
+                    .discountPer(BigDecimal.valueOf(10))
+                    .addItemOptionDtoList(List.of(
+                            AddItemOptionDto.builder()
+                                    .name("검정색")
+                                    .additionalPrice(BigDecimal.valueOf(0))
+                                    .optionStock(4)
+                                    .build(),
+                            AddItemOptionDto.builder()
+                                    .name("나이키")
+                                    .additionalPrice(BigDecimal.valueOf(3000))
+                                    .optionStock(9)
+                                    .build(),
+                            AddItemOptionDto.builder()
+                                    .name("흰색")
+                                    .additionalPrice(BigDecimal.valueOf(1000))
+                                    .optionStock(15)
+                                    .build(),
+                            AddItemOptionDto.builder()
+                                    .name("로고")
+                                    .additionalPrice(BigDecimal.valueOf(3000))
+                                    .optionStock(20)
+                                    .build()
+                    ))
+                    .mainImage(null)
+                    .mainImagePath("/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg")
+                    .subImages(null)
+                    .subImagesPath(List.of(
                             "/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png",
                             "/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png",
                             "/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png"
-                    ), "상품옵션있음, 추가이미지있음", ItemStatus.판매중 ,true));
+                    ))
+                    .content("상품옵션있음, 추가이미지있음")
+                    .itemStatus(ItemStatus.판매중)
+                    .useOptions(true)
+                    .build());
 
-            itemService.saveItem(new AddItemDto(sellerNo, "상품테스트2(품절)", ItemCategory.바지, 50000, 0, 0,
-                    List.of(
-                            new AddItemOptionDto("면바지", 0, 0),
-                            new AddItemOptionDto("청바지", 10000, 0)
-                    ), null, "/shop_image/1736f6e5-e78c-4f29-96d4-621fbfd034d0.png", null,
-                    List.of(
+            itemService.saveItem(AddItemDto.builder()
+                    .sellerNo(sellerNo)
+                    .name("상품테스트2(품절)")
+                    .itemCategory(ItemCategory.바지)
+                    .price(BigDecimal.valueOf(50000))
+                    .totalStock(0)
+                    .discountPer(BigDecimal.valueOf(0))
+                    .addItemOptionDtoList(List.of(
+                            AddItemOptionDto.builder()
+                                    .name("면바지")
+                                    .additionalPrice(BigDecimal.valueOf(0))
+                                    .optionStock(0)
+                                    .build(),
+                            AddItemOptionDto.builder()
+                                    .name("청바지")
+                                    .additionalPrice(BigDecimal.valueOf(10000))
+                                    .optionStock(0)
+                                    .build()
+                    ))
+                    .mainImage(null)
+                    .mainImagePath("/shop_image/1736f6e5-e78c-4f29-96d4-621fbfd034d0.png")
+                    .subImages(null)
+                    .subImagesPath(List.of(
                             "/shop_image/97297b82-81cd-4de7-ba70-bd4e467716df.png"
-                    ), "판매완료", ItemStatus.품절,true));
+                    ))
+                    .content("판매완료")
+                    .itemStatus(ItemStatus.품절)
+                    .useOptions(true)
+                    .build());
 
 
             List<AddItemOptionDto> emptyAddItemOptionDtoList = new ArrayList<>();
-            itemService.saveItem(new AddItemDto(sellerNo, "상품테스트3(옵션X)", ItemCategory.아우터, 250000, 20, 0,
-                    emptyAddItemOptionDtoList, null, "/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png", null,
-                    List.of(
+            itemService.saveItem(AddItemDto.builder()
+                    .sellerNo(sellerNo)
+                    .name("상품테스트3(옵션X)")
+                    .itemCategory(ItemCategory.아우터)
+                    .price(BigDecimal.valueOf(250000))
+                    .totalStock(20)
+                    .discountPer(BigDecimal.valueOf(0))
+                    .addItemOptionDtoList(emptyAddItemOptionDtoList)
+                    .mainImage(null)
+                    .mainImagePath("/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png")
+                    .subImages(null)
+                    .subImagesPath(List.of(
                             "/shop_image/b3ba7699-d546-4075-84a9-9b6888049a0c.png"
-                    ), "상품옵션없음, 추가이미지있음", ItemStatus.판매중, true));
+                    ))
+                    .content("상품옵션없음, 추가이미지있음")
+                    .itemStatus(ItemStatus.판매중)
+                    .useOptions(true)
+                    .build());
 
 
             List<String> emptySubImageList = new ArrayList<>();
-            itemService.saveItem(new AddItemDto(sellerNo, "상품테스트4(추가이미지X)", ItemCategory.신발, 150000, 10, 0,
-                    List.of(
-                            new AddItemOptionDto("250", 0, 10),
-                            new AddItemOptionDto("260", 10000, 0)
-                    ), null, "/shop_image/b3ecf6ae-140e-4950-81bf-74adce043239.png", null,
-                    emptySubImageList, "상품옵션있음, 추가이미지없음", ItemStatus.판매중,true));
+            itemService.saveItem(AddItemDto.builder()
+                    .sellerNo(sellerNo)
+                    .name("상품테스트4(추가이미지X)")
+                    .itemCategory(ItemCategory.신발)
+                    .price(BigDecimal.valueOf(150000))
+                    .totalStock(10)
+                    .discountPer(BigDecimal.valueOf(0))
+                    .addItemOptionDtoList(List.of(
+                            AddItemOptionDto.builder()
+                                    .name("250")
+                                    .additionalPrice(BigDecimal.valueOf(0))
+                                    .optionStock(10)
+                                    .build(),
+                            AddItemOptionDto.builder()
+                                    .name("260")
+                                    .additionalPrice(BigDecimal.valueOf(10000))
+                                    .optionStock(0)
+                                    .build()
+                    ))
+                    .mainImage(null)
+                    .mainImagePath("/shop_image/b3ecf6ae-140e-4950-81bf-74adce043239.png")
+                    .subImages(null)
+                    .subImagesPath(emptySubImageList)
+                    .content("상품옵션있음, 추가이미지없음")
+                    .itemStatus(ItemStatus.판매중)
+                    .useOptions(true)
+                    .build());
 
 
 /*
             for (int i=0; i<50; i++) {
-                itemService.saveItem(new AddItemDto(sellerNo, "페이징테스트" + i, ItemCategory.신발, i*1000, i, i,
-                        emptyAddItemOptionDtoList, null, "/shop_image/c9cf742d-c0b0-4b8d-9253-cc32823d36db.png", null,
-                        emptySubImageList, "상품옵션없음, 추가이미지없음", ItemStatus.판매중,true));
+                itemService.saveItem(AddItemDto.builder()
+                        .sellerNo(sellerNo)
+                        .name("페이징테스트" + i)
+                        .itemCategory(ItemCategory.신발)
+                        .price(BigDecimal.valueOf(i*1000))
+                        .totalStock(i)
+                        .discountPer(BigDecimal.valueOf(i))
+                        .addItemOptionDtoList(emptyAddItemOptionDtoList)
+                        .mainImage(null)
+                        .mainImagePath("/shop_image/c9cf742d-c0b0-4b8d-9253-cc32823d36db.png")
+                        .subImages(null)
+                        .subImagesPath(emptySubImageList)
+                        .content("상품옵션없음, 추가이미지없음")
+                        .itemStatus(ItemStatus.판매중)
+                        .useOptions(true)
+                        .build());
             }
 */
 
             /**
              * 장바구니 데이터
              */
-            cartService.saveCart(new SaveCartDto(1L, 5L, 1L, 1));
-            cartService.saveCart(new SaveCartDto(1L, 5L, 4L, 2));
-            cartService.saveCart(new SaveCartDto(3L, 5L, null, 6));
-            cartService.saveCart(new SaveCartDto(4L, 5L, 7L, 1));
+            cartService.saveCart(SaveCartDto.builder()
+                    .itemNo(1L)
+                    .memberNo(5L)
+                    .itemOptionNo(1L)
+                    .count(1)
+                    .build());
+            cartService.saveCart(SaveCartDto.builder()
+                    .itemNo(1L)
+                    .memberNo(5L)
+                    .itemOptionNo(4L)
+                    .count(2)
+                    .build());
+            cartService.saveCart(SaveCartDto.builder()
+                    .itemNo(3L)
+                    .memberNo(5L)
+                    .itemOptionNo(null)
+                    .count(6)
+                    .build());
+            cartService.saveCart(SaveCartDto.builder()
+                    .itemNo(4L)
+                    .memberNo(5L)
+                    .itemOptionNo(7L)
+                    .count(1)
+                    .build());
 
             em.flush();
             em.clear();
@@ -193,27 +310,90 @@ public class InitDB {
              * 주문 목록 데이터
              */
             List<AddOrderItemDto> addOrderItemDtoList1 = new ArrayList<>();
-            addOrderItemDtoList1.add(new AddOrderItemDto(1L, 1L, 1L, 1, null, BigDecimal.valueOf(24300),
-                    "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", "상품테스트1", "검정색"));
-            addOrderItemDtoList1.add(new AddOrderItemDto(3L, null, 3L, 6, null, BigDecimal.valueOf(1500000),
-                    "/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png", "상품테스트3(옵션X)", ""));
-            orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
-                    "A아파트", "배송 전 미리 연락 부탁드립니다.", addOrderItemDtoList1, BigDecimal.valueOf(1524300),
-                    0, BigDecimal.valueOf(1524300)));
+            addOrderItemDtoList1.add(AddOrderItemDto.builder()
+                    .cartNo(1L)
+                    .optionNo(1L)
+                    .itemNo(1L)
+                    .count(1)
+                    .discountedPrice(null)
+                    .totalPrice(BigDecimal.valueOf(24300))
+                    .imageUrl("/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg")
+                    .itemName("상품테스트1")
+                    .optionName("검정색")
+                    .build());
+            addOrderItemDtoList1.add(AddOrderItemDto.builder()
+                    .cartNo(3L)
+                    .optionNo(null)
+                    .itemNo(3L)
+                    .count(6)
+                    .discountedPrice(null)
+                    .totalPrice(BigDecimal.valueOf(1500000))
+                    .imageUrl("/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png")
+                    .itemName("상품테스트3(옵션X)")
+                    .optionName("")
+                    .build());
+            orderService.saveOrder(5L, AddOrderDto.builder()
+                    .recipientName("메인수령인")
+                    .phoneNumber("010-1234-1234")
+                    .postcode("12345")
+                    .roadAddress("인천광역시 서구")
+                    .detailAddress("A아파트")
+                    .deliveryRequest("배송 전 미리 연락 부탁드립니다.")
+                    .addOrderItemDtoList(addOrderItemDtoList1)
+                    .totalProductPrice(BigDecimal.valueOf(1524300))
+                    .deliveryFee(0)
+                    .totalOrderPrice(BigDecimal.valueOf(1524300))
+                    .build());
 
             List<AddOrderItemDto> addOrderItemDtoList2 = new ArrayList<>();
-            addOrderItemDtoList2.add(new AddOrderItemDto(4L, 7L, 4L, 1, null, BigDecimal.valueOf(150000),
-                    "/shop_image/b3ecf6ae-140e-4950-81bf-74adce043239.png", "상품테스트4(추가이미지X)", "250"));
-            orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
-                    "A아파트", "배송 전 미리 연락 부탁드립니다.", addOrderItemDtoList2, BigDecimal.valueOf(150000),
-                    0, BigDecimal.valueOf(150000)));
+            addOrderItemDtoList2.add(AddOrderItemDto.builder()
+                    .cartNo(4L)
+                    .optionNo(7L)
+                    .itemNo(4L)
+                    .count(1)
+                    .discountedPrice(null)
+                    .totalPrice(BigDecimal.valueOf(150000))
+                    .imageUrl("/shop_image/b3ecf6ae-140e-4950-81bf-74adce043239.png")
+                    .itemName("상품테스트4(추가이미지X)")
+                    .optionName("250")
+                    .build());
+            orderService.saveOrder(5L, AddOrderDto.builder()
+                    .recipientName("메인수령인")
+                    .phoneNumber("010-1234-1234")
+                    .postcode("12345")
+                    .roadAddress("인천광역시 서구")
+                    .detailAddress("A아파트")
+                    .deliveryRequest("배송 전 미리 연락 부탁드립니다.")
+                    .addOrderItemDtoList(addOrderItemDtoList2)
+                    .totalProductPrice(BigDecimal.valueOf(150000))
+                    .deliveryFee(0)
+                    .totalOrderPrice(BigDecimal.valueOf(150000))
+                    .build());
 
             List<AddOrderItemDto> addOrderItemDtoList3 = new ArrayList<>();
-            addOrderItemDtoList3.add(new AddOrderItemDto(1L, 1L, 1L, 1, null, BigDecimal.valueOf(24300),
-                    "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", "상품테스트1", "검정색"));
-            orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
-                    "A아파트", "부재 시 문 앞에 놓아주세요.", addOrderItemDtoList3, BigDecimal.valueOf(24300),
-                    3000, BigDecimal.valueOf(27300)));
+            addOrderItemDtoList3.add(AddOrderItemDto.builder()
+                    .cartNo(1L)
+                    .optionNo(1L)
+                    .itemNo(1L)
+                    .count(1)
+                    .discountedPrice(null)
+                    .totalPrice(BigDecimal.valueOf(24300))
+                    .imageUrl("/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg")
+                    .itemName("상품테스트1")
+                    .optionName("검정색")
+                    .build());
+            orderService.saveOrder(5L, AddOrderDto.builder()
+                    .recipientName("메인수령인")
+                    .phoneNumber("010-1234-1234")
+                    .postcode("12345")
+                    .roadAddress("인천광역시 서구")
+                    .detailAddress("A아파트")
+                    .deliveryRequest("부재 시 문 앞에 놓아주세요.")
+                    .addOrderItemDtoList(addOrderItemDtoList3)
+                    .totalProductPrice(BigDecimal.valueOf(24300))
+                    .deliveryFee(3000)
+                    .totalOrderPrice(BigDecimal.valueOf(27300))
+                    .build());
 
             em.flush();
             em.clear();
@@ -225,18 +405,41 @@ public class InitDB {
                     .setParameter("courier", "우체국택배")
                     .setParameter("trackingNumber", "12345432")
                     .executeUpdate();
-            SaveReturnRequestDto returnRequestDto = new SaveReturnRequestDto(1L, 5L, 1, ReturnReasonCode.DEFECTIVE,
-                    "모서리쪽 스크래치가 있음", BigDecimal.valueOf(24300), ReturnRequestStatus.요청);
+            SaveReturnRequestDto returnRequestDto = SaveReturnRequestDto.builder()
+                    .orderItemNo(1L)
+                    .memberNo(5L)
+                    .count(1)
+                    .returnReasonCode(ReturnReasonCode.DEFECTIVE)
+                    .reasonDetail("모서리쪽 스크래치가 있음")
+                    .price(BigDecimal.valueOf(24300))
+                    .returnRequestStatus(ReturnRequestStatus.요청)
+                    .build();
             returnRequestService.saveReturnRequest(returnRequestDto);
 
             // 취소
-            SaveCancelRequestDto saveCancelRequestDto = new SaveCancelRequestDto(3L, 4L, 5L, 1, CancelReasonCode.WRONG_ORDER,
-                    "사이즈 잘못 선택함", BigDecimal.valueOf(24300), CancelRequestStatus.요청);
+            SaveCancelRequestDto saveCancelRequestDto = SaveCancelRequestDto.builder()
+                    .orderNo(3L)
+                    .orderItemNo(4L)
+                    .memberNo(5L)
+                    .count(1)
+                    .cancelReasonCode(CancelReasonCode.WRONG_ORDER)
+                    .reasonDetail("사이즈 잘못 선택함")
+                    .price(BigDecimal.valueOf(24300))
+                    .cancelRequestStatus(CancelRequestStatus.요청)
+                    .build();
             cancelRequestService.saveCancelRequest(saveCancelRequestDto);
 
             // 취소2
-            SaveCancelRequestDto saveCancelRequestDto2 = new SaveCancelRequestDto(1L, 2L, 5L, 6, CancelReasonCode.CHANGED_MIND,
-                    "단순변심", BigDecimal.valueOf(1500000), CancelRequestStatus.요청);
+            SaveCancelRequestDto saveCancelRequestDto2 = SaveCancelRequestDto.builder()
+                    .orderNo(1L)
+                    .orderItemNo(2L)
+                    .memberNo(5L)
+                    .count(6)
+                    .cancelReasonCode(CancelReasonCode.CHANGED_MIND)
+                    .reasonDetail("단순변심")
+                    .price(BigDecimal.valueOf(1500000))
+                    .cancelRequestStatus(CancelRequestStatus.요청)
+                    .build();
             cancelRequestService.saveCancelRequest(saveCancelRequestDto2);
 
 
@@ -260,11 +463,29 @@ public class InitDB {
              * 배송완료 데이터
              */
             List<AddOrderItemDto> addOrderItemDtoList4 = new ArrayList<>();
-            addOrderItemDtoList4.add(new AddOrderItemDto(5L, 1L, 1L, 2, null, BigDecimal.valueOf(48600),
-                    "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", "상품테스트1", "검정색"));
-            orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
-                    "A아파트", "배송 전 미리 연락 부탁드립니다.", addOrderItemDtoList4, BigDecimal.valueOf(48600),
-                    0, BigDecimal.valueOf(48600)));
+            addOrderItemDtoList4.add(AddOrderItemDto.builder()
+                    .cartNo(5L)
+                    .optionNo(1L)
+                    .itemNo(1L)
+                    .count(2)
+                    .discountedPrice(null)
+                    .totalPrice(BigDecimal.valueOf(48600))
+                    .imageUrl("/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg")
+                    .itemName("상품테스트1")
+                    .optionName("검정색")
+                    .build());
+            orderService.saveOrder(5L, AddOrderDto.builder()
+                    .recipientName("메인수령인")
+                    .phoneNumber("010-1234-1234")
+                    .postcode("12345")
+                    .roadAddress("인천광역시 서구")
+                    .detailAddress("A아파트")
+                    .deliveryRequest("배송 전 미리 연락 부탁드립니다.")
+                    .addOrderItemDtoList(addOrderItemDtoList4)
+                    .totalProductPrice(BigDecimal.valueOf(48600))
+                    .deliveryFee(0)
+                    .totalOrderPrice(BigDecimal.valueOf(48600))
+                    .build());
             em.createQuery("update Delivery d " +
                             "set d.deliveryStatus=:status, d.courier=:courier, d.trackingNumber=:trackingNumber " +
                             "where d.no = 5L")
@@ -351,12 +572,28 @@ public class InitDB {
             // 상품 저장
             for (SeedItem seedItem : ITEMS) {
                 List<AddItemOptionDto> optionDtoList = seedItem.options().stream()
-                        .map(o -> new AddItemOptionDto(o.name(), o.additionalPrice(), o.stock()))
+                        .map(o -> AddItemOptionDto.builder()
+                                .name(o.name())
+                                .additionalPrice(BigDecimal.valueOf(o.additionalPrice()))
+                                .optionStock(o.stock())
+                                .build())
                         .toList();
-                itemService.saveItem(new AddItemDto(sellerNo, seedItem.name(), seedItem.category(), seedItem.price(),
-                        seedItem.totalStock(), seedItem.discountPer(), new ArrayList<>(optionDtoList), null,
-                        seedItem.mainImage(), null, new ArrayList<>(seedItem.subImages()), seedItem.content(),
-                        ItemStatus.판매중, true));
+                itemService.saveItem(AddItemDto.builder()
+                        .sellerNo(sellerNo)
+                        .name(seedItem.name())
+                        .itemCategory(seedItem.category())
+                        .price(BigDecimal.valueOf(seedItem.price()))
+                        .totalStock(seedItem.totalStock())
+                        .discountPer(BigDecimal.valueOf(seedItem.discountPer()))
+                        .addItemOptionDtoList(new ArrayList<>(optionDtoList))
+                        .mainImage(null)
+                        .mainImagePath(seedItem.mainImage())
+                        .subImages(null)
+                        .subImagesPath(new ArrayList<>(seedItem.subImages()))
+                        .content(seedItem.content())
+                        .itemStatus(ItemStatus.판매중)
+                        .useOptions(true)
+                        .build());
             }
             em.flush();
             em.clear();
@@ -460,16 +697,34 @@ public class InitDB {
                         .findFirst()
                         .orElseThrow()
                         .mainImage();
-                addOrderItemDtoList.add(new AddOrderItemDto(null, option.getNo(), item.getNo(), line.count(), discountedPrice,
-                        totalPrice, mainImage, item.getName(), option.getName()));
+                addOrderItemDtoList.add(AddOrderItemDto.builder()
+                        .cartNo(null)
+                        .optionNo(option.getNo())
+                        .itemNo(item.getNo())
+                        .count(line.count())
+                        .discountedPrice(discountedPrice)
+                        .totalPrice(totalPrice)
+                        .imageUrl(mainImage)
+                        .itemName(item.getName())
+                        .optionName(option.getName())
+                        .build());
                 totalProductPrice = totalProductPrice.add(totalPrice);
             }
             int deliveryFee = totalProductPrice.compareTo(BigDecimal.valueOf(50000)) < 0 ? 3000 : 0;
 
             Member member = memberRepository.findById(memberNo).orElseThrow();
-            return orderService.saveOrder(memberNo, new AddOrderDto(member.getName(), member.getPhoneNumber(), "12345",
-                    "인천광역시 서구", "A아파트", deliveryRequest, addOrderItemDtoList, totalProductPrice,
-                    deliveryFee, totalProductPrice.add(BigDecimal.valueOf(deliveryFee))));
+            return orderService.saveOrder(memberNo, AddOrderDto.builder()
+                    .recipientName(member.getName())
+                    .phoneNumber(member.getPhoneNumber())
+                    .postcode("12345")
+                    .roadAddress("인천광역시 서구")
+                    .detailAddress("A아파트")
+                    .deliveryRequest(deliveryRequest)
+                    .addOrderItemDtoList(addOrderItemDtoList)
+                    .totalProductPrice(totalProductPrice)
+                    .deliveryFee(deliveryFee)
+                    .totalOrderPrice(totalProductPrice.add(BigDecimal.valueOf(deliveryFee)))
+                    .build());
         }
 
         /**

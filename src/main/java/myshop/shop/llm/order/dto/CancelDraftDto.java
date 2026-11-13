@@ -27,7 +27,15 @@ public class CancelDraftDto {
 
     /** 확정 시 CancelRequestService.saveCancelRequest에 넘길 DTO. 회원번호는 인증된 값을 쓴다. */
     public SaveCancelRequestDto toDto(Long authenticatedMemberNo, Long orderNo) {
-        return new SaveCancelRequestDto(orderNo, orderItemNo, authenticatedMemberNo, count,
-                cancelReasonCode, reasonDetail, price, CancelRequestStatus.요청);
+        return SaveCancelRequestDto.builder()
+                .orderNo(orderNo)
+                .orderItemNo(orderItemNo)
+                .memberNo(authenticatedMemberNo)
+                .count(count)
+                .cancelReasonCode(cancelReasonCode)
+                .reasonDetail(reasonDetail)
+                .price(price)
+                .cancelRequestStatus(CancelRequestStatus.요청)
+                .build();
     }
 }

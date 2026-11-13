@@ -1,5 +1,10 @@
 package myshop.shop.dto.seller;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
@@ -10,27 +15,14 @@ import org.springframework.ui.Model;
 import static myshop.shop.controller.memberWeb.MemberController.SessionConst.LOGIN_SELLER;
 
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginCheckSellerDto {
 
     private Long no;
     private String id;
     private String name;
-
-    public LoginCheckSellerDto() {
-    }
-
-    public LoginCheckSellerDto(Long no, String id, String name) {
-        this.no = no;
-        this.id = id;
-        this.name = name;
-    }
-
-    public LoginCheckSellerDto(Seller seller) {
-        this.no = seller.getNo();
-        this.id = seller.getId();
-        this.name = seller.getName();
-    }
-
 
     public boolean loginCheck(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);

@@ -1,6 +1,10 @@
 package myshop.shop.controller.memberWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -69,17 +73,12 @@ public class CartController {
         return true;
     }
     @Getter @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class UpdateCartCount {
         private Long cartNo;
         private int count;
-
-        public UpdateCartCount() {
-        }
-
-        public UpdateCartCount(Long cartNo, int count) {
-            this.cartNo = cartNo;
-            this.count = count;
-        }
     }
 
 

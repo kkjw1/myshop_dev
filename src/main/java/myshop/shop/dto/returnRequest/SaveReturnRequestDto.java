@@ -1,5 +1,9 @@
 package myshop.shop.dto.returnRequest;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +14,9 @@ import java.math.BigDecimal;
 
 @Getter @Setter
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SaveReturnRequestDto {
     private Long orderItemNo;
     private Long memberNo;
@@ -19,16 +26,4 @@ public class SaveReturnRequestDto {
     private BigDecimal price;
     private ReturnRequestStatus returnRequestStatus;
 
-    public SaveReturnRequestDto() {
-    }
-
-    public SaveReturnRequestDto(Long orderItemNo, Long memberNo, int count, ReturnReasonCode returnReasonCode, String reasonDetail, BigDecimal price, ReturnRequestStatus returnRequestStatus) {
-        this.orderItemNo = orderItemNo;
-        this.memberNo = memberNo;
-        this.count = count;
-        this.returnReasonCode = returnReasonCode;
-        this.reasonDetail = reasonDetail;
-        this.price = price;
-        this.returnRequestStatus = returnRequestStatus;
-    }
 }

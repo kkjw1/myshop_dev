@@ -1,5 +1,10 @@
 package myshop.shop.dto.member;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
@@ -11,25 +16,13 @@ import static myshop.shop.controller.memberWeb.MemberController.SessionConst.LOG
 
 @Getter
 @ToString(of = {"no", "id", "name"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginCheckMemberDto {
     private Long no;
     private String id;
     private String name;
-
-    public LoginCheckMemberDto() {
-    }
-
-    public LoginCheckMemberDto(Long no, String id, String name) {
-        this.no = no;
-        this.id = id;
-        this.name = name;
-    }
-
-    public LoginCheckMemberDto(Member member) {
-        this.no = member.getNo();
-        this.id = member.getId();
-        this.name = member.getName();
-    }
 
     public boolean loginCheck(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);

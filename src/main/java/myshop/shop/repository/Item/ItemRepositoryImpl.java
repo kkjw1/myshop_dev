@@ -164,15 +164,22 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .fetchOne();
 
         if (detailItem != null) {
-            return new DetailItemDto(
-                    detailItem.getItemCategory(),
-                    detailItem.getName(),
-                    detailItem.getOriginalPrice(),
-                    detailItem.getDiscountPer(),
-                    detailItem.getTotalStock(),
-                    detailItem.getItemOptions(),
-                    detailItem.getContent()
-            );
+            return DetailItemDto.builder()
+                    .itemCategory(detailItem.getItemCategory())
+                    .name(detailItem.getName())
+                    .price(detailItem.getOriginalPrice())
+                    .discountPer(detailItem.getDiscountPer())
+                    .totalStock(detailItem.getTotalStock())
+                    .detailItemOptionDtoList(detailItem.getItemOptions().stream()
+                            .map(io -> DetailItemOptionDto.builder()
+                                    .itemOptionNo(io.getNo())
+                                    .name(io.getName())
+                                    .additionalPrice(io.getAdditionalPrice())
+                                    .optionStock(io.getOptionStock())
+                                    .build())
+                            .toList())
+                    .content(detailItem.getContent())
+                    .build();
         }
         return null;
     }

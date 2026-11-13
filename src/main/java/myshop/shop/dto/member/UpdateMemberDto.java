@@ -1,5 +1,10 @@
 package myshop.shop.dto.member;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -8,6 +13,9 @@ import myshop.shop.entity.member.Gender;
 import myshop.shop.entity.member.Member;
 
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateMemberDto {
     public String id;
 
@@ -27,30 +35,5 @@ public class UpdateMemberDto {
     private String phoneNumber;
 
     private Gender gender;
-
-    public UpdateMemberDto() {
-    }
-
-    public UpdateMemberDto(String id, String name, String email, String password, String telecom, String phoneNumber, Gender gender) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.telecom = telecom;
-        this.phoneNumber = phoneNumber;
-        this.gender = gender;
-    }
-
-    public UpdateMemberDto(Member member) {
-        this.id = member.getId();
-        this.name = member.getName();
-        this.email = member.getEmail();
-        this.password = member.getPassword();
-        this.telecom = member.getTelecom();
-        this.phoneNumber = member.getPhoneNumber();
-        this.gender = member.getGender();
-    }
-
-
 
 }

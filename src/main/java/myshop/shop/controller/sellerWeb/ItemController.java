@@ -1,6 +1,10 @@
 package myshop.shop.controller.sellerWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -155,25 +159,14 @@ public class ItemController {
     }
 
     @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @ToString(of = {"itemNos", "itemStatus", "discountPer"})
     public static class BulkModifyItemDto {
         private List<Long> itemNos;
         private ItemStatus itemStatus;
         private BigDecimal discountPer;
-
-        public BulkModifyItemDto() {
-        }
-
-        public BulkModifyItemDto(List<Long> itemNos, ItemStatus itemStatus, Integer discountPer) {
-            this.itemNos = itemNos;
-            this.itemStatus = itemStatus;
-            this.discountPer = BigDecimal.valueOf(discountPer);
-        }
-        public BulkModifyItemDto(List<Long> itemNos, ItemStatus itemStatus, BigDecimal discountPer) {
-            this.itemNos = itemNos;
-            this.itemStatus = itemStatus;
-            this.discountPer = discountPer;
-        }
     }
 
 

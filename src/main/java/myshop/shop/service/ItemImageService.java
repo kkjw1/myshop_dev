@@ -1,5 +1,9 @@
 package myshop.shop.service;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,23 +33,19 @@ public class ItemImageService {
         Item itemProxy = itemRepository.getReferenceById(itemNo);
         ItemImage main = itemImageRepository.findItemImageByIsMain(itemProxy, true).orElse(null);
         List<ItemImage> sub = itemImageRepository.findItemImageListByIsMain(itemProxy, false);
-        return new ImagePath(main, sub);
+        return ImagePath.builder()
+                .mainPath(main == null ? null : main.getImageUrl())
+                .subPath(sub.stream().map(ItemImage::getImageUrl).collect(Collectors.toList()))
+                .build();
     }
 
     @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ImagePath {
         String mainPath;
+        @Builder.Default
         List<String> subPath = new ArrayList<>();
-
-        public ImagePath(ItemImage main, List<ItemImage> sub) {
-            if (main == null) {
-                this.mainPath = null;
-            } else {
-                this.mainPath = main.getImageUrl();
-            }
-            for (ItemImage itemImage : sub) {
-                this.subPath.add(itemImage.getImageUrl());
-            }
-        }
     }
 }

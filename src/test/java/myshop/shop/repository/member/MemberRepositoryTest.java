@@ -25,7 +25,15 @@ class MemberRepositoryTest {
     @Test
     public void deleteByIdTest() throws Exception {
         //given
-        SignUpMemberDto signUpMemberDto = new SignUpMemberDto("id", "password", "email", "name", "telecom", Gender.MAN, "phoneNumber");
+        SignUpMemberDto signUpMemberDto = SignUpMemberDto.builder()
+                .id("id")
+                .password("password")
+                .email("email")
+                .name("name")
+                .telecom("telecom")
+                .gender(Gender.MAN)
+                .phoneNumber("phoneNumber")
+                .build();
         memberService.signUp(signUpMemberDto);
         em.flush();
         em.clear();

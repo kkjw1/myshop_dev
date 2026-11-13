@@ -5,6 +5,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -68,7 +72,9 @@ public class MemberController {
      */
     @GetMapping("login/{loginId}")
     public String loginForm2(@PathVariable("loginId") String id, Model model) {
-        model.addAttribute("loginMemberDto", new LoginMemberDto(id));
+        model.addAttribute("loginMemberDto", LoginMemberDto.builder()
+                .id(id)
+                .build());
         return "member/login";
     }
 
@@ -126,7 +132,11 @@ public class MemberController {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
 
 
-        LoginCheckMemberDto loginCheckMemberDto = new LoginCheckMemberDto(login.getNo(), login.getId(), login.getName());
+        LoginCheckMemberDto loginCheckMemberDto = LoginCheckMemberDto.builder()
+                .no(login.getNo())
+                .id(login.getId())
+                .name(login.getName())
+                .build();
         // Spring Security의 Authentication
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 loginCheckMemberDto, null, List.of(new SimpleGrantedAuthority("MEMBER_" + loginCheckMemberDto.getId()))
@@ -409,7 +419,9 @@ public class MemberController {
             return "redirect:/login";
         }
 
-        model.addAttribute("resetPasswordMemberDto", new ResetPasswordMemberDto(memberId));
+        model.addAttribute("resetPasswordMemberDto", ResetPasswordMemberDto.builder()
+                .id(memberId)
+                .build());
         return "member/reset_password";
     }
 
@@ -454,7 +466,15 @@ public class MemberController {
         }*/
 
         Member member = memberRepository.findById(memberId).orElse(null);
-        UpdateMemberDto updateMember = new UpdateMemberDto(member);
+        UpdateMemberDto updateMember = UpdateMemberDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .password(member.getPassword())
+                .telecom(member.getTelecom())
+                .phoneNumber(member.getPhoneNumber())
+                .gender(member.getGender())
+                .build();
         model.addAttribute("updateMember", updateMember);
 
         return "member/mypage/member_modify";
@@ -514,7 +534,13 @@ public class MemberController {
         Member beforeMember = memberRepository.findById(updateMemberDto.getId()).orElse(null);
         Member updateMember = memberService.memberModify(updateMemberDto);
 
-        ChangedDataDto changedDataDto = new ChangedDataDto(beforeMember, updateMember);
+        ChangedDataDto changedDataDto = ChangedDataDto.builder()
+                .name(Objects.equals(beforeMember.getName(), updateMember.getName()) ? null : updateMember.getName())
+                .email(Objects.equals(beforeMember.getEmail(), updateMember.getEmail()) ? null : updateMember.getEmail())
+                .telecom(Objects.equals(beforeMember.getTelecom(), updateMember.getTelecom()) ? null : updateMember.getTelecom())
+                .phoneNumber(Objects.equals(beforeMember.getPhoneNumber(), updateMember.getPhoneNumber()) ? null : updateMember.getPhoneNumber())
+                .gender(Objects.equals(beforeMember.getGender(), updateMember.getGender()) ? null : updateMember.getGender())
+                .build();
         if (StringUtils.hasText(updateMemberDto.getPassword())) {
             changedDataDto.setPassword("비밀번호가 변경되었습니다.");
         }
@@ -526,6 +552,9 @@ public class MemberController {
     }
 
     @Getter @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @ToString(of = {"name", "email", "password", "telecom", "phoneNumber", "gender"})
     public static class ChangedDataDto {
         private String name;
@@ -535,23 +564,6 @@ public class MemberController {
         private String phoneNumber;
         private Gender gender;
 
-        public ChangedDataDto(Member before, Member after) {
-            if (!Objects.equals(before.getName(), after.getName())) {
-                this.name = after.getName();
-            }
-            if (!Objects.equals(before.getEmail(), after.getEmail())) {
-                this.email = after.getEmail();
-            }
-            if (!Objects.equals(before.getTelecom(), after.getTelecom())) {
-                this.telecom = after.getTelecom();
-            }
-            if (!Objects.equals(before.getPhoneNumber(), after.getPhoneNumber())) {
-                this.phoneNumber = after.getPhoneNumber();
-            }
-            if (!Objects.equals(before.getGender(), after.getGender())) {
-                this.gender = after.getGender();
-            }
-        }
     }
 
 

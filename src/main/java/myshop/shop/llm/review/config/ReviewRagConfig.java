@@ -35,17 +35,17 @@ public class ReviewRagConfig {
      * 벡터 저장소도 인메모리로 두고 기동 시 재색인한다. 운영에서는 PgVector 등으로 교체.
      */
     @Bean
-    VectorStore reviewVectorStore(EmbeddingModel embeddingModel) {
+    public VectorStore reviewVectorStore(EmbeddingModel embeddingModel) {
         return SimpleVectorStore.builder(embeddingModel).build();
     }
 
     @Bean
-    ChatClient reviewQaClient(ChatClient.Builder builder) {
+    public ChatClient reviewQaClient(ChatClient.Builder builder) {
         return builder.defaultSystem(QA_SYSTEM).build();
     }
 
     @Bean
-    ChatClient reviewSummaryClient(ChatClient.Builder builder) {
+    public ChatClient reviewSummaryClient(ChatClient.Builder builder) {
         return builder.defaultSystem(SUMMARY_SYSTEM).build();
     }
 }

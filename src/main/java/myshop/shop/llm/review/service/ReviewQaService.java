@@ -53,6 +53,7 @@ public class ReviewQaService {
                 return new ReviewQaResponseDto("질문과 관련된 리뷰를 찾지 못했습니다. 상품 상세 설명이나 1:1 문의를 이용해 주세요.", List.of());
             }
 
+            String finalQuestion = question;
             String answer = reviewQaClient.prompt()
                     .user(u -> u.text("""
                             <reviews>
@@ -62,7 +63,7 @@ public class ReviewQaService {
                             고객 질문: {question}
                             """)
                             .param("reviews", toContext(docs))
-                            .param("question", question))
+                            .param("question", finalQuestion))
                     .call()
                     .content();
 

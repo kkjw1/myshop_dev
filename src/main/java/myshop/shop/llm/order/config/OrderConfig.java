@@ -1,4 +1,4 @@
-package myshop.shop.llm.config;
+package myshop.shop.llm.order.config;
 
 import myshop.shop.llm.order.tool.ShopTools;
 import org.springframework.ai.chat.client.ChatClient;
@@ -23,7 +23,7 @@ public class OrderConfig {
 		        """;
 
     @Bean
-    ChatClient shopAssistant(ChatClient.Builder builder, ChatMemory chatMemory, ShopTools tools) {
+    public ChatClient shopAssistant(ChatClient.Builder builder, ChatMemory chatMemory, ShopTools tools) {
         return builder
                 .defaultSystem(SYSTEM)
                 .defaultTools(tools)
